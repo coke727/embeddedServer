@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <style>
+    nav {
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    li {
+      float: left;
+    }
+
+    li a{
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+    }
+
+    li a:hover {
+      background-color: #111;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+    <li><a href="http://localhost:8080/">Home</a></li>
+    <li><a href="http://localhost:8080/configuration">Configuration</a></li>
+    </ul> 
+  </nav>
+  <section>
+    <center>
+    <div class="login">
+      <h1>Login</h1>
+      <form method="post" action="http://localhost:8080/login">
+        <p><input type="text" name="login" value="" placeholder="Username or Email"></p>
+        <p><input type="password" name="password" value="" placeholder="Password"></p>
+        <p class="submit"><input type="submit" name="commit" value="Login"></p>
+      </form>
+    </div>
+    </center>
+  </section>
+</body>
+</html>
