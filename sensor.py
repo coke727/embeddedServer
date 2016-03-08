@@ -28,7 +28,7 @@ def run():
 		sys.exit(0)
 	else:
 		f = open('samples.txt', 'a+')
-		f.write(str(take_sample()) + ", " + strftime("%d %b %Y %H:%M:%S", gmtime()) + "\n")
+		f.write(str(take_sample()) + "; " + strftime("%a, %d %b %Y %H:%M:%S", gmtime()) + "\n")
 		f.close()
 		threading.Timer(frequency, run).start()
 

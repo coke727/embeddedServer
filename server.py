@@ -30,11 +30,11 @@ class myHandler(BaseHTTPRequestHandler):
 					new_file.write(line)
 			with open("samples.txt") as samples:
 				for i, line in enumerate(samples):
-					tupla = [x.strip() for x in line.split(',')]
+					tupla = [x.strip() for x in line.split(';')]
 					new_file.write("<tr><td>" + tupla[0] + "</td><td>" + tupla[1] + "</td></tr>")
 					if i == num_samples - 1:
 						break
-			new_file.write("</table></article></body></html>")
+			new_file.write("</table></article><aside><div id='chart_div'></div></aside></body></html>")
 		old_file.close()
 	
 	#Handler for the GET requests
