@@ -6,16 +6,23 @@ import SocketServer
 import logging
 import cgi
 import sys
+import re
+import base64
+import scp
+import threading
+import subprocess
 
 PORT_NUMBER = 8080
 samples_show = 20
 scp_adress = ""
+scp_frequency = 0
 frequency = 0
 
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
-
+	#proc = Popen('scp.py')
+	#subprocess.Popen(["python", "script.py"] + myList)
 
 	def getSamples(n):
 		with open("samples.txt") as myfile:
@@ -101,11 +108,9 @@ class myHandler(BaseHTTPRequestHandler):
 
 		if(self.path == '/configuration'):
 			global samples_show
-			global scp_adress
 			global frequency
 
 			print "[Configuration Post]"
-			# TODO store in log: print (self.headers)
 			form = cgi.FieldStorage(
 				fp=self.rfile,
 				headers=self.headers,
@@ -113,9 +118,45 @@ class myHandler(BaseHTTPRequestHandler):
 						'CONTENT_TYPE':self.headers['Content-Type'],
 						})
 
-			samples_show = int(form["samples"].value)
-			scp_adress = form["scp"].value
-			frequency = int(form["frequency"].value)
+			#Data validation
+			if not re.match("^[0-9]+$", form["samples"].value):
+				self.send_response(402)
+				self.end_headers()
+			elif not re.match("^[0-9]+$", form["samples"].value):
+				self.send_response(402)
+				self.end_headers()
+			else:
+				#TODO if para comprobar limites del int
+				#TODO Change frequency
+				samples_show = int(form["samples"].value)
+				frequency = int(form["frequency"].value)
+
+				f = open(curdir + sep + "html/configuration.html") 
+				self.send_response(200)
+				self.send_header('Content-type','text/html')
+				self.end_headers()
+				self.wfile.write(f.read())
+				f.close()
+
+		if(self.path == '/scp'):
+			global scp_adress
+
+			print "[SCP Post]"
+			form = cgi.FieldStorage(
+				fp=self.rfile,
+				headers=self.headers,
+				environ={'REQUEST_METHOD':'POST',
+						'CONTENT_TYPE':self.headers['Content-Type'],
+						})
+
+			#Data validation
+			#else if not re.match("regex para scp", form["scp"].value):
+			
+			#if para comprobar limites del int
+			#form["password"].value
+			#form["scpfrequency"].value
+			scp_adress = base64.b64encode(form["user"].value+"@"+form["scp"].value+":"+form["directory"].value+" -P "+form["port"].value)
+			#TODO call scp whith encripted params
 
 			f = open(curdir + sep + "html/configuration.html") 
 			self.send_response(200)
@@ -130,7 +171,7 @@ try:
 	server = HTTPServer(('', PORT_NUMBER), myHandler)
 	print 'Started httpserver on port ' , PORT_NUMBER
 	
-	#Wait forever for incoming htto requests
+	#Wait forever for incoming http requests
 	server.serve_forever()
 
 except KeyboardInterrupt:

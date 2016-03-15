@@ -1,47 +1,8 @@
 <html>
 <head>
-	<style>
-		nav {
-			width: 100%;
-			margin-bottom: 30px;
-		}
-
-		ul {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			background-color: #333;
-		}
-
-		li {
-			float: left;
-		}
-
-		li a{
-			display: block;
-			color: white;
-			text-align: center;
-			padding: 14px 16px;
-			text-decoration: none;
-		}
-
-		li a:hover {
-			background-color: #111;
-		}
-
-		form {
-			width: 25%;
-		}
-
-		form p {
-			width: 100%;
-		}
-
-		form p input {
-			width: 100%;
-		}
-	</style>
+	<meta charset="utf-8">
+	<title>Configuration</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
 	<nav>
@@ -56,10 +17,21 @@
 		<form method="post" action="http://localhost:8080/configuration">
         	<p><input type="number" name="frequency" value="" placeholder="Frequency in minutes" min="1"></p>
         	<p><input type="number" name="samples" value="" placeholder="samples number" min="1"></p>
-        	<p><input type="text" name="scp" value="" placeholder="scp direction"></p>
-        <p class="submit"><input type="submit" name="commit" value="Submit"></p>
-      </form>
-     </center>
+        	<p class="submit"><input type="submit" name="commit" value="Submit"></p>
+		</form>
+    </center>
+    <center>
+    	<h2>Samples transmision configuration</h2>
+		<form method="post" action="http://localhost:8080/scp">
+    		<p><input type="text" name="scp" value="" placeholder="scp direction"></p>
+        	<p><input type="text" name="user" value="" placeholder="scp user"></p>
+        	<p><input type="password" name="password" value="" placeholder="scp password"></p>
+        	<p><input type="number" name="port" value="" placeholder="scp port" min="1"></p>
+        	<p><input type="text" name="directory" value="" placeholder="directory to store samples"></p>
+        	<p><input type="number" name="scpfrequency" value="" placeholder="scp frequency in Hours" min="1"></p>
+        	<p class="submit"><input type="submit" name="commit" value="Submit"></p>
+    	</form>
+    </center>
 	</article>
 </body>
 </html>
