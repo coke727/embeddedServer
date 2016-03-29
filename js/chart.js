@@ -5,7 +5,7 @@ google.charts.load('current', {'packages':['corechart']});
 
       var data = new google.visualization.DataTable();
       data.addColumn('datetime', 'Time of Day');
-      data.addColumn('number', 'Motivation Level');
+      data.addColumn('number', 'Temperature');
 
       var myTableArray = [];
 
@@ -23,17 +23,15 @@ google.charts.load('current', {'packages':['corechart']});
         rows.push([new Date(x[1]),Number(x[0])]);
       })
 
-      console.log(rows);
-
       data.addRows(rows);
 
       var options = {
         /*width: 900,*/
         height: 600,
         legend: {position: 'none'},
-        enableInteractivity: false,
+        enableInteractivity: true,
         chartArea: {
-          width: '85%'
+          width: '90%'
         },
         hAxis: {
           viewWindow: {
@@ -77,3 +75,14 @@ google.charts.load('current', {'packages':['corechart']});
         chart.draw(data, options);
       };*/
     }
+
+
+
+var width = $(window).width();
+$(window).resize(function(){
+   if($(this).width() != width){
+      width = $(this).width();
+      drawChart()
+   }
+});
+

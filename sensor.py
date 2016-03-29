@@ -14,7 +14,7 @@ def take_sample():
 	return last_sample
 
 # Gracefully program finish when ctrl+c signal is done.
-def signal_handling(signum,frame):           
+def signal_handling(signum,frame):         
 	global terminate
 	terminate = True
 
@@ -27,7 +27,7 @@ def run():
 		print "Shutting down sensor"
 		sys.exit(0)
 	else:
-		f = open('samples.txt', 'a+')
+		f = open('data/samples.txt', 'a+')
 		f.write(str(take_sample()) + "; " + strftime("%a, %d %b %Y %H:%M:%S", gmtime()) + "\n")
 		f.close()
 		threading.Timer(frequency, run).start()

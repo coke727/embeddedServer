@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+import ssl
 from os import curdir, sep
 import SimpleHTTPServer
 import SocketServer
@@ -7,10 +8,10 @@ import logging
 import cgi
 import sys
 import re
+from crontab import CronTab
 import base64
-import scp
-import threading
 import subprocess
+from subprocess import PIPE
 
 PORT_NUMBER = 8080
 samples_show = 20
@@ -18,14 +19,19 @@ scp_adress = ""
 scp_frequency = 0
 frequency = 0
 
-#This class will handles any incoming request from
-#the browser 
+#This class will handles any incoming request from the browser 
 class myHandler(BaseHTTPRequestHandler):
-	#proc = Popen('scp.py')
-	#subprocess.Popen(["python", "script.py"] + myList)
+
+	@staticmethod
+	def isInt(s):
+		try: 
+			int(s)
+			return True
+		except ValueError:
+			return False
 
 	def getSamples(n):
-		with open("samples.txt") as myfile:
+		with open("data/samples.txt") as myfile:
 			head = [next(myfile) for x in xrange(n)]
 		print head
 
@@ -35,13 +41,13 @@ class myHandler(BaseHTTPRequestHandler):
 			with open("html/web_bone.html") as old_file:
 				for line in old_file:
 					new_file.write(line)
-			with open("samples.txt") as samples:
+			with open("data/samples.txt") as samples:
 				for i, line in enumerate(samples):
 					tupla = [x.strip() for x in line.split(';')]
 					new_file.write("<tr><td>" + tupla[0] + "</td><td>" + tupla[1] + "</td></tr>")
 					if i == num_samples - 1:
 						break
-			new_file.write("</table></article><aside><div id='chart_div'></div></aside></body></html>")
+			new_file.write("</table></article></body></html>")
 		old_file.close()
 	
 	#Handler for the GET requests
@@ -70,7 +76,6 @@ class myHandler(BaseHTTPRequestHandler):
 				sendReply = True
 
 			if sendReply == True:
-				#create_web(10)
 				#Open the static file requested and send it
 				f = open(curdir + sep + self.path) 
 				self.send_response(200)
@@ -87,7 +92,6 @@ class myHandler(BaseHTTPRequestHandler):
 	def do_POST(self):
 		if(self.path == '/login'):
 			print "[Login Post]"
-			# TODO para almacenar en un log: print (self.headers)
 			form = cgi.FieldStorage(
 				fp=self.rfile,
 				headers=self.headers,
@@ -109,6 +113,7 @@ class myHandler(BaseHTTPRequestHandler):
 		if(self.path == '/configuration'):
 			global samples_show
 			global frequency
+			isDataCorrect = True
 
 			print "[Configuration Post]"
 			form = cgi.FieldStorage(
@@ -122,24 +127,35 @@ class myHandler(BaseHTTPRequestHandler):
 			if not re.match("^[0-9]+$", form["samples"].value):
 				self.send_response(402)
 				self.end_headers()
-			elif not re.match("^[0-9]+$", form["samples"].value):
+			elif not re.match("^[0-9]+$", form["frequency"].value):
 				self.send_response(402)
 				self.end_headers()
 			else:
-				#TODO if para comprobar limites del int
-				#TODO Change frequency
-				samples_show = int(form["samples"].value)
-				frequency = int(form["frequency"].value)
+				#TODO Change frequency function when sensor is installed
+				if( self.isInt( form["samples"].value ) and int( form["samples"].value ) > 0 ):
+					samples_show = int(form["samples"].value)
+				else:
+					isDataCorrect = False
 
-				f = open(curdir + sep + "html/configuration.html") 
-				self.send_response(200)
+				if( self.isInt( form["frequency"].value ) and int( form["frequency"].value ) > 0 ):
+					frequency = int(form["frequency"].value)
+				else:
+					isDataCorrect = False
+
+				if( isDataCorrect ):
+					f = open(curdir + sep + "html/configuration-conf.html")
+					self.send_response(200)
+				else:
+					f = open(curdir + sep + "html/configuration-conf-fail.html")
+					self.send_response(402)
+
 				self.send_header('Content-type','text/html')
 				self.end_headers()
 				self.wfile.write(f.read())
 				f.close()
 
 		if(self.path == '/scp'):
-			global scp_adress
+			isDataCorrect = False
 
 			print "[SCP Post]"
 			form = cgi.FieldStorage(
@@ -150,16 +166,23 @@ class myHandler(BaseHTTPRequestHandler):
 						})
 
 			#Data validation
-			#else if not re.match("regex para scp", form["scp"].value):
-			
-			#if para comprobar limites del int
-			#form["password"].value
-			#form["scpfrequency"].value
-			scp_adress = base64.b64encode(form["user"].value+"@"+form["scp"].value+":"+form["directory"].value+" -P "+form["port"].value)
-			#TODO call scp whith encripted params
+			if self.isInt(form["scpfrequency"].value) and self.isInt(form["port"].value) and form["scp"].value and form["user"].value and form["directory"].value and form["password"].value:
+				isDataCorrect = True
 
-			f = open(curdir + sep + "html/configuration.html") 
-			self.send_response(200)
+			#Create scp task.
+			#TODO encriptar datos que se pasan al script (?)
+			p = subprocess.Popen(["python", "scpdaemon.py", "restart", form["scpfrequency"].value, form["scp"].value, form["user"].value, form["port"].value, form["directory"].value], stdin=PIPE, stdout=PIPE)
+			print p.communicate(form["password"].value)
+			#TODO check that is correct, subprocess.check~
+
+			#Redirect to configuration.
+			if( isDataCorrect ):
+				f = open(curdir + sep + "html/configuration-scp.html") 
+				self.send_response(200)
+			else:
+				f = open(curdir + sep + "html/configuration-scp-fail.html") 
+				self.send_response(402)
+
 			self.send_header('Content-type','text/html')
 			self.end_headers()
 			self.wfile.write(f.read())
@@ -170,11 +193,15 @@ try:
 	#incoming request
 	server = HTTPServer(('', PORT_NUMBER), myHandler)
 	print 'Started httpserver on port ' , PORT_NUMBER
+
+	#httpd = BaseHTTPServer.HTTPServer(('localhost', 4443), myHandler)
+	#httpd.socket = ssl.wrap_socket (httpd.socket, certfile='path/to/localhost.pem', server_side=True)
+	#httpd.serve_forever()
 	
 	#Wait forever for incoming http requests
 	server.serve_forever()
 
 except KeyboardInterrupt:
-	
+	#TODO cerrar daemon (?)
 	print '^C received, shutting down the web server'
 	server.socket.close()

@@ -1,0 +1,71 @@
+TODOS:
+------
+
+WEB & SYS:
+----------
+1º  RB  ---- SSL conection (In RBPI2)
+2º DONE ---- Create scp daemon from server post method, se le pasan args como user, host etc... y pide por raw input la contraseña
+3º      ---- Backup daemon/crontab --> integrar con scp o por separado || lo primero es bloqueante
+4º DONE ---- Check data in server and client (+- done)
+5º  RB  ---- conectar post de frecuencia de mediciones con sensor (In PBPI2)
+6º DONE ---- Refactor
+7º DONE ---- HTML configuration with a "Correctly done." msg.
+8º      ---- Js libraries get from RPI2 instead unknown server
+9º DONE ---- Responsive view
+
+DETALLES:
+---------
+1º raw_input imprime password varias veces, eliminar label del raw_input
+2º comprobar que el raw input realmente no almacena nada
+3º sensor tiene que hacer un prepend al fichero no un append
+4º el post a configuracion se hace validando con 0 como valor minimo, mirar si subir ese minimo o si poner máximo
+5º comprobar que la conexion scp se realizo correctamente
+6º cntl+c cerrar hacer popen con daemon stop para uqe se pare tambien (pensar antes si esto seria correcto)
+7º si el scp casca enviar todos los archivos que no se enviaron // comprobar si el daemon sigue si el scp ha cascado
+
+Hardware & Energy:
+------------------
+1º      ---- Configurations
+2º      ---- Save batery mode (soft, medium, hard)
+3º      ---- Sensor install
+4º      ---- conect sensor with system
+
+Kolar Questions:
+----------------
+
+Fechas de defensa
+Como es la defensa
+Que hacemos hasta julio
+Como van las notas aqui
+
+Daemon bones:
+-------------
+
+quieto
+a ver
+tu tienes el daemon escrito en python
+tipo
+a ver que te hago el pseudo
+import pollas_en_vinagre
+import os
+
+class KawaiiTermometerDaemon: 
+
+  def __init__(self): 
+    self.is_kawaii = False
+    pass = raw_input("Metemela: ")
+    if not self.comprobar_pass_con_fichero_cifrado(pass): 
+      print "Vas a hackear a tu puta madre"
+      return
+    else: 
+      self.funcionando()
+    
+  def funcionando(self): 
+    while True:
+      self.hacer_cosas()
+      os.sleep(5*60)
+
+*Creacion de un cron
+cron = CronTab(user='coke') #TODO change user in RPI2
+job  = cron.new(command='./scp.py') #TODO arguments here
+job.hour.every(int(form["scpfrequency"].value))
