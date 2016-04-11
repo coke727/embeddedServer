@@ -3,25 +3,32 @@ TODOS:
 
 WEB & SYS:
 ----------
-1º  RB  ---- SSL conection (In RBPI2)
-2º DONE ---- Create scp daemon from server post method, se le pasan args como user, host etc... y pide por raw input la contraseña
-3º      ---- Backup daemon/crontab --> integrar con scp o por separado || lo primero es bloqueante
-4º DONE ---- Check data in server and client (+- done)
-5º  RB  ---- conectar post de frecuencia de mediciones con sensor (In PBPI2)
-6º DONE ---- Refactor
-7º DONE ---- HTML configuration with a "Correctly done." msg.
-8º      ---- Js libraries get from RPI2 instead unknown server
-9º DONE ---- Responsive view
+1º   RB  ---- SSL conection (In RBPI2)
+2º  DONE ---- Create scp daemon from server post method, se le pasan args como user, host etc... y pide por raw input la contraseña
+3º       ---- Backup daemon/crontab --> integrar con scp o por separado || lo primero es bloqueante
+4º  DONE ---- Check data in server and client (+- done)
+5º   RB  ---- conectar post de frecuencia de mediciones con sensor (In PBPI2)
+6º  DONE ---- Refactor
+7º  DONE ---- HTML configuration with a "Correctly done." msg.
+8º       ---- Js libraries get from RPI2 instead unknown server
+9º  DONE ---- Responsive view
+10º DONE ---- Implementar sesión
+11º      ---- Preguntar a kolar si scp para más usuarios
 
 DETALLES:
 ---------
-1º raw_input imprime password varias veces, eliminar label del raw_input
-2º comprobar que el raw input realmente no almacena nada
-3º sensor tiene que hacer un prepend al fichero no un append
-4º el post a configuracion se hace validando con 0 como valor minimo, mirar si subir ese minimo o si poner máximo
-5º comprobar que la conexion scp se realizo correctamente
-6º cntl+c cerrar hacer popen con daemon stop para uqe se pare tambien (pensar antes si esto seria correcto)
-7º si el scp casca enviar todos los archivos que no se enviaron // comprobar si el daemon sigue si el scp ha cascado
+1º  DONE ---- raw_input imprime password varias veces, eliminar label del raw_input.
+2º       ---- comprobar que el raw input realmente no almacena nada.
+3º   RB  ---- sensor tiene que hacer un prepend al fichero no un append.
+4º       ---- el post a configuracion se hace validando con 0 como valor minimo, mirar si subir ese minimo o si poner máximo.
+5º  DONE ---- comprobar que la conexion scp se realizo correctamente.
+6º       ---- cntl+c cerrar hacer popen con daemon stop para que se pare tambien (pensar antes si esto seria correcto).
+7º       ---- si el scp casca enviar todos los archivos que no se enviaron // comprobar si el daemon sigue si el scp ha cascado.
+8º       ---- Preguntar al usuario si esta seguro en los formularios cuando los valores sean ridiculos pero posibles, diciendo que la            bateria se acabara antes etc.
+9º       ---- Implementar autenticacion. Almacenando user y contraseña en dispositivo.
+10º      ---- Pantalla de fallo en el login.
+11º      ---- Comprobar que las cookies se borran correctamente.
+12º      ---- Crear valor de cookie aleatoreo y diferente cada vez.
 
 Hardware & Energy:
 ------------------
@@ -29,14 +36,22 @@ Hardware & Energy:
 2º      ---- Save batery mode (soft, medium, hard)
 3º      ---- Sensor install
 4º      ---- conect sensor with system
+5º      ---- si esta en modo ahorro de energia 2, el scp tiene que activar el wifi, enviar las cosas y desactivarlo o esperar a una de las franjas en que el wifi está activado y enviar todos los ficheros que no envió antes. Preguntar a kolar cual es el mejor método o cual prefiere.
 
-Kolar Questions:
-----------------
+Last Meeting Kolar
+------------------
+1º conectar a red wifi
+2º portar server
+3º obtener ip visible
+4º conectar sensor
+5º power saving modes
 
-Fechas de defensa
-Como es la defensa
-Que hacemos hasta julio
-Como van las notas aqui
+* Tres modos de batería, el primero con wifi activado, el segundo activar el wifi sólo cuando el usuario quiera segun franjas horarias, dias, etc. El tercer modo apaga la raspberri y el reloj del sensor la despierta antes de cada medida, si es franja horaria del 2º modo o del 1º cambia a ese modo. Poner opciones en configuracion para esto. Poner de gratis opcion "siempre modo 1" no siempre modo 3 porque no podría cambiarse de modo. Al poner modo 3 setear una fecha obligatoria para pasar a modo 2 o modo 1 ya que sino no se podría despertar al cacharro.
+
+* Por otro lado kolar dijo que como modo de obtener puntuacion extra crear un script que desde el cliente permita pedir a la raspi los valores que no están almacenados en el ordenador de kolar. simplemente generar una conexion scp que antes de nada mire en el directorio expecificado cual es la ultima muestra y que pida todos los ficheros desde entonces. Tambien podria mirarse un diff, que traiga todos los intervalos faltantes o a lo guarro que traiga todo sobrescribiendo los que ya estan mediante los buckup almacenados en la raspi.
+
+* El Wifi para tener ip visible consiste en el dhcp pasarle el nombre correcto tipo usuarioVut~nombrednscorto.fit.vutbrno.cz hay que investigar sobre esto porque no lo tengo del todo claro pero siempre puedo preguntar a los técnicos o a los colleges de la oficina.
+	- http://www.stud.fit.vutbr.cz/~user/
 
 Daemon bones:
 -------------
@@ -69,3 +84,13 @@ class KawaiiTermometerDaemon:
 cron = CronTab(user='coke') #TODO change user in RPI2
 job  = cron.new(command='./scp.py') #TODO arguments here
 job.hour.every(int(form["scpfrequency"].value))
+
+cifrado de usuarios en raspi
+-----------------------------
+
+jajaja
+lo que tambien se me ocurre es cifrar la contraseña de cifrado de los datos con las contraseñas de los usuarios, y guardar los reusltados en un txt
+es guarro, guarro, guarro
+el usuario loguea, el sistema comprueba que está bien, y coge esa pass para descifrar la hash de la contraseña a los datos
+serian dos txt, uno para usuario hash para el login, y el otro con usuario - contraseña de datos cifrada
+o dos sqlite

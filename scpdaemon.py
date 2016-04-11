@@ -67,7 +67,7 @@ def count(): #FIXME name of the function
 		ssh = createSSHClient(address, port, user, password)
 		scp = SCPClient(ssh.get_transport())
 		scp.put("./data/samples.txt", directory)
-		time.sleep(6000000)
+		time.sleep(frequency * 3600)
 
 if sys.argv[1] == COMMAND_START:
 	get_arguments()
