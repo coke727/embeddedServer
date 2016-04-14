@@ -8,14 +8,13 @@ import logging
 import cgi
 import sys
 import re
-from crontab import CronTab
 import base64
 import subprocess
 from subprocess import PIPE
 import Cookie
 from datetime import datetime, timedelta
 
-PORT_NUMBER = 8080
+PORT_NUMBER = 80
 samples_show = 20
 scp_adress = ""
 scp_frequency = 0
