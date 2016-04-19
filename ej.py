@@ -1,4 +1,5 @@
-
+import os
+import glob
 import yapdi
 import sys
 import syslog
@@ -6,9 +7,39 @@ import time
 
 import yapdi
 
+os.system("modprobe w1-gpio")
+os.system("modprobe w1-therm")
+
+base_dir = "/sys/bus/w1/devices/"
+device_folder = glob.glob(base_dir + "28*")[0]
+device_file = device_folder + "/w1_slave"
+
 COMMAND_START = 'start'
 COMMAND_STOP = 'stop'
 COMMAND_RESTART = 'restart'
+
+frequency = 1
+
+def read_temp_raw():
+    f = open(device_file, 'r')
+    lines = f.readlines()
+    f.close()
+    return lines
+
+def read_temp():
+    lines = read_temp_raw()
+    while lines[0].strip()[-3:] != 'YES':
+        time.sleep(0.2)
+        lines = read_temp_raw()
+    equal_pos = lines[1].find('t=')
+    if equal_pos != -1:
+        temp_string = lines[1][equal_pos+2:]
+        temp_c = float(temp_string)/1000
+        return temp_c
+
+def get_arguments():
+    global frequency
+    frequency = int(sys.argv[2])
 
 def usage():
     print("USAGE: python %s %s|%s|%s" % (sys.argv[0], COMMAND_START, COMMAND_STOP, COMMAND_RESTART))
@@ -19,15 +50,15 @@ if len(sys.argv) < 2 or sys.argv[1] not in [COMMAND_START, COMMAND_STOP, COMMAND
     exit()
 
 def count():
-    ''' Outputs a counting value to syslog. Sleeps for 1 second between counts '''
-    i = 0
     while 1:
-        syslog.openlog("yapdi-example.info", 0, syslog.LOG_USER)
-        syslog.syslog(syslog.LOG_NOTICE, 'Counting %s' % (i))    
-        i += 1
-        time.sleep(1)
+        while 1:
+        f = open('data/samples.txt', 'a+')
+        f.write("1")
+        f.close()
+        time.sleep(15)
 
 if sys.argv[1] == COMMAND_START:
+    get_arguments()
     daemon = yapdi.Daemon()
 
     # Check whether an instance is already running
@@ -54,6 +85,7 @@ elif sys.argv[1] == COMMAND_STOP:
         print('Trying to stop running instance failed')
 
 elif sys.argv[1] == COMMAND_RESTART:
+    get_arguments()
     daemon = yapdi.Daemon()
     retcode = daemon.restart()
 
