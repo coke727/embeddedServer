@@ -147,7 +147,7 @@ class myHandler(BaseHTTPRequestHandler):
 				self.send_header('Content-type','text/html')
 				self.send_response(403)
 				self.end_headers()
-				f = open(curdir + sep + "html/login.html") #TODO bad login
+				f = open(curdir + sep + "html/login-fail.html")
 
 			self.wfile.write(f.read())
 			f.close()

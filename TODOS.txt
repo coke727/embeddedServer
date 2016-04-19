@@ -10,10 +10,9 @@ WEB & SYS:
 5º   RB  ---- conectar post de frecuencia de mediciones con sensor (In PBPI2)
 6º  DONE ---- Refactor
 7º  DONE ---- HTML configuration with a "Correctly done." msg.
-8º       ---- Js libraries get from RPI2 instead unknown server
+8º  FAIL ---- Js libraries get from RPI2 instead unknown server --> Google no permite su descarga.
 9º  DONE ---- Responsive view
 10º DONE ---- Implementar sesión
-11º      ---- Preguntar a kolar si scp para más usuarios
 
 DETALLES:
 ---------
@@ -26,9 +25,10 @@ DETALLES:
 7º       ---- si el scp casca enviar todos los archivos que no se enviaron // comprobar si el daemon sigue si el scp ha cascado.
 8º       ---- Preguntar al usuario si esta seguro en los formularios cuando los valores sean ridiculos pero posibles, diciendo que la            bateria se acabara antes etc.
 9º       ---- Implementar autenticacion. Almacenando user y contraseña en dispositivo.
-10º      ---- Pantalla de fallo en el login.
+10º DONE ---- Pantalla de fallo en el login.
 11º      ---- Comprobar que las cookies se borran correctamente.
 12º      ---- Crear valor de cookie aleatoreo y diferente cada vez.
+13º	     ---- Cookie gard doesnt work, find another form to ensure there exist a cookie
 
 Hardware & Energy:
 ------------------
@@ -52,6 +52,11 @@ Last Meeting Kolar
 
 * El Wifi para tener ip visible consiste en el dhcp pasarle el nombre correcto tipo usuarioVut~nombrednscorto.fit.vutbrno.cz hay que investigar sobre esto porque no lo tengo del todo claro pero siempre puedo preguntar a los técnicos o a los colleges de la oficina.
 	- http://www.stud.fit.vutbr.cz/~user/
+	- AMEND el user es dhcps<ipnum>
+
+Pass:
+-----
+tarifni zona sto jedna
 
 Daemon bones:
 -------------
