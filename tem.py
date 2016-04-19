@@ -2,10 +2,10 @@ import os
 import glob
 import time
 
-os.system("modprob w1-gpio")
-os.system("modprob w1-therm")
+os.system("modprobe w1-gpio")
+os.system("modprobe w1-therm")
 
-base_dir = "/sys/bus/w1/devices"
+base_dir = "/sys/bus/w1/devices/"
 device_folder = glob.glob(base_dir + "28*")[0]
 device_file = device_folder + "/w1_slave"
 
@@ -27,6 +27,6 @@ def read_temp():
 		temp_f = temp_c * 9.0 / 5.0 +32.0
 		return temp_c, temp_f
 
-while(true):
+while(True):
 	print(read_temp())
 	time.sleep(1)
