@@ -187,7 +187,7 @@ class myHandler(BaseHTTPRequestHandler):
 
 						if( self.isInt( form["frequency"].value ) and int( form["frequency"].value ) > 0 ):
 							frequency = int(form["frequency"].value)
-							os.system("python tempdaemon restart " + frequency)
+							os.system("python tempdaemon restart " + str(frequency))
 						else:
 							isDataCorrect = False
 

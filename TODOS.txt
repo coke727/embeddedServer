@@ -29,6 +29,7 @@ DETALLES:
 11º      ---- Comprobar que las cookies se borran correctamente.
 12º      ---- Crear valor de cookie aleatoreo y diferente cada vez.
 13º	     ---- Cookie gard doesnt work, find another form to ensure there exist a cookie
+14º      ---- si no hay samples casca al intentar enseñar la web
 
 Hardware & Energy:
 ------------------

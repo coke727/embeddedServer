@@ -2,10 +2,36 @@
 
 import time, threading, random, sys, getopt, signal
 from time import gmtime, strftime
+import os
+import glob
+
+os.system("modprobe w1-gpio")
+os.system("modprobe w1-therm")
+
+base_dir = "/sys/bus/w1/devices/"
+device_folder = glob.glob(base_dir + "28*")[0]
+device_file = device_folder + "/w1_slave"
 
 last_sample = 0
 frequency = 1
 terminate = False
+
+def read_temp_raw():
+	f = open(device_file, 'r')
+	lines = f.readlines()
+	f.close()
+	return lines
+
+def read_temp():
+	lines = read_temp_raw()
+	while lines[0].strip()[-3:] != 'YES':
+		time.sleep(0.2)
+		lines = read_temp_raw()
+	equal_pos = lines[1].find('t=')
+	if equal_pos != -1:
+		temp_string = lines[1][equal_pos+2:]
+		temp_c = float(temp_string)/1000
+		return temp_c
 
 # Take a temperature sample generated with a gaussian distribution which mean is the last sample taken and a standard deviation of 0.73.
 def take_sample():
@@ -28,7 +54,7 @@ def run():
 		sys.exit(0)
 	else:
 		f = open('data/samples.txt', 'a+')
-		f.write(str(take_sample()) + "; " + strftime("%a, %d %b %Y %H:%M:%S", gmtime()) + "\n")
+		f.write(str(read_temp()) + "; " + strftime("%a, %d %b %Y %H:%M:%S", gmtime()) + "\n")
 		f.close()
 		threading.Timer(frequency, run).start()
 
