@@ -27,9 +27,10 @@ DETALLES:
 9º       ---- Implementar autenticacion. Almacenando user y contraseña en dispositivo.
 10º DONE ---- Pantalla de fallo en el login.
 11º      ---- Comprobar que las cookies se borran correctamente.
-12º      ---- Crear valor de cookie aleatoreo y diferente cada vez.
-13º	     ---- Cookie gard doesnt work, find another form to ensure there exist a cookie
+12º DONE ---- Crear valor de cookie aleatoreo y diferente cada vez.
+13º	     ---- Cookie gard doesnt work, find another form to ensure cookie exist
 14º      ---- si no hay samples casca al intentar enseñar la web
+15º      ---- añadir información sobre el user a la cookie generada para garantizar aleatoreidad
 
 Hardware & Energy:
 ------------------

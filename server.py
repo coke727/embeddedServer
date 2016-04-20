@@ -10,6 +10,7 @@ import sys
 import re
 import base64
 import subprocess
+import hashlib
 from subprocess import PIPE
 import Cookie
 from datetime import datetime, timedelta
@@ -130,7 +131,8 @@ class myHandler(BaseHTTPRequestHandler):
 			if(True): #TODO Check login and pass
 				#Cookie creation
 				c = Cookie.SimpleCookie()
-				c['cookietemp'] = "cookie-oreo" #TODO setear valor de cookie, debe ser diferente para cada cookie
+				hash_object = hashlib.md5(str(datetime.now()).encode())
+				c['cookietemp'] = str(hash_object.hexdigest())
 				c['cookietemp']['domain'] = "localhost:8080"
 				c['cookietemp']['expires'] = 12000
 				c['cookietemp']['path'] = "/configuration"
