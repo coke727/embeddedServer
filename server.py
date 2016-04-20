@@ -13,6 +13,7 @@ import subprocess
 import hashlib
 from subprocess import PIPE
 import Cookie
+import errno
 from datetime import datetime, timedelta
 
 PORT_NUMBER = 80
@@ -44,13 +45,21 @@ class myHandler(BaseHTTPRequestHandler):
 			with open("html/web_bone.html") as old_file:
 				for line in old_file:
 					new_file.write(line)
-			with open("data/samples.txt") as samples:
-				for i, line in enumerate(samples):
-					tupla = [x.strip() for x in line.split(';')]
-					new_file.write("<tr><td>" + tupla[0] + "</td><td>" + tupla[1] + "</td></tr>")
-					if i == num_samples - 1:
-						break
-			new_file.write("</table></article></body></html>")
+			try:
+				with open("data/samples.txt") as samples:
+					for i, line in enumerate(samples):
+						tupla = [x.strip() for x in line.split(';')]
+						new_file.write("<tr><td>" + tupla[0] + "</td><td>" + tupla[1] + "</td></tr>")
+						if i == num_samples - 1:
+							break
+				new_file.write("</table></article></body></html>")
+			except IOError, e:
+				old_file.close()
+				new_file.close()
+				with open("html/web.html",'w+') as new_file:
+					with open("html/empty_web.html") as old_file:
+						for line in old_file:
+							new_file.write(line)
 		old_file.close()
 
 	#Check if cookie is stored in server.
