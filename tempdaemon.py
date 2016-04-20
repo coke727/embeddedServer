@@ -54,9 +54,8 @@ def count():
     while 1:
 	temp_c = read_temp() 
 	time_now = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
-	f = open('data/samples.txt', 'a+')
-	f.write(str(temp_c) + "; "+time_now+" \n")
-        f.close()
+	with file('data/samples.txt','r') as original: data = original.read()
+	with file('data/samples.txt','w') as modified: modified.write(str(temp_c) + "; "+ time_now+"\n" + data)
         time.sleep(frequency)
 
 if sys.argv[1] == COMMAND_START:
