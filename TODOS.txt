@@ -7,7 +7,7 @@ WEB & SYS:
 2º  DONE ---- Create scp daemon from server post method, se le pasan args como user, host etc... y pide por raw input la contraseña
 3º       ---- Backup daemon/crontab --> integrar con scp o por separado || lo primero es bloqueante
 4º  DONE ---- Check data in server and client (+- done)
-5º   RB  ---- conectar post de frecuencia de mediciones con sensor (In PBPI2)
+5º  DONE ---- conectar post de frecuencia de mediciones con sensor (In PBPI2)
 6º  DONE ---- Refactor
 7º  DONE ---- HTML configuration with a "Correctly done." msg.
 8º  FAIL ---- Js libraries get from RPI2 instead unknown server --> Google no permite su descarga.
@@ -18,7 +18,7 @@ DETALLES:
 ---------
 1º  DONE ---- raw_input imprime password varias veces, eliminar label del raw_input.
 2º       ---- comprobar que el raw input realmente no almacena nada.
-3º   RB  ---- sensor tiene que hacer un prepend al fichero no un append.
+3º  DONE ---- sensor tiene que hacer un prepend al fichero no un append.
 4º       ---- el post a configuracion se hace validando con 0 como valor minimo, mirar si subir ese minimo o si poner máximo.
 5º  DONE ---- comprobar que la conexion scp se realizo correctamente.
 6º       ---- cntl+c cerrar hacer popen con daemon stop para que se pare tambien (pensar antes si esto seria correcto).
@@ -35,7 +35,7 @@ Hardware & Energy:
 ------------------
 1º      ---- Configurations
 2º      ---- Save batery mode (soft, medium, hard)
-3º      ---- Sensor install
+3º DONE ---- Sensor install
 4º      ---- conect sensor with system
 5º      ---- si esta en modo ahorro de energia 2, el scp tiene que activar el wifi, enviar las cosas y desactivarlo o esperar a una de las franjas en que el wifi está activado y enviar todos los ficheros que no envió antes. Preguntar a kolar cual es el mejor método o cual prefiere.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 import ssl
-from os import curdir, sep
+from os import curdir, sep, system
 import SimpleHTTPServer
 import SocketServer
 import logging
@@ -187,7 +187,7 @@ class myHandler(BaseHTTPRequestHandler):
 
 						if( self.isInt( form["frequency"].value ) and int( form["frequency"].value ) > 0 ):
 							frequency = int(form["frequency"].value)
-							os.system("python tempdaemon.py restart " + str(frequency))
+							system("python tempdaemon.py restart " + str(frequency))
 						else:
 							isDataCorrect = False
 
