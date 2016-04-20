@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 import ssl
-from os import curdir, sep, system
+from os import curdir, sep, system, stat
 import SimpleHTTPServer
 import SocketServer
 import logging
@@ -39,6 +39,12 @@ class myHandler(BaseHTTPRequestHandler):
 			head = [next(myfile) for x in xrange(n)]
 		print head
 
+	def create_empty():
+		with open("html/web.html",'w+') as new_file:
+			with open("html/empty_web.html") as old_file:
+				for line in old_file:
+					new_file.write(line)
+
 	@staticmethod
 	def create_web(num_samples):
 		with open("html/web.html",'w+') as new_file:
@@ -46,20 +52,22 @@ class myHandler(BaseHTTPRequestHandler):
 				for line in old_file:
 					new_file.write(line)
 			try:
-				with open("data/samples.txt") as samples:
-					for i, line in enumerate(samples):
-						tupla = [x.strip() for x in line.split(';')]
-						new_file.write("<tr><td>" + tupla[0] + "</td><td>" + tupla[1] + "</td></tr>")
-						if i == num_samples - 1:
-							break
-				new_file.write("</table></article></body></html>")
+				if stat("data/samples.txt").st_size == 0:
+					old_file.close()
+					new_file.close()
+					create_empty()
+				else:
+					with open("data/samples.txt") as samples:
+						for i, line in enumerate(samples):
+							tupla = [x.strip() for x in line.split(';')]
+							new_file.write("<tr><td>" + tupla[0] + "</td><td>" + tupla[1] + "</td></tr>")
+							if i == num_samples - 1:
+								break
+					new_file.write("</table></article></body></html>")
 			except IOError, e:
 				old_file.close()
 				new_file.close()
-				with open("html/web.html",'w+') as new_file:
-					with open("html/empty_web.html") as old_file:
-						for line in old_file:
-							new_file.write(line)
+				create_empty()
 		old_file.close()
 
 	#Check if cookie is stored in server.
