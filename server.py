@@ -39,14 +39,13 @@ class myHandler(BaseHTTPRequestHandler):
 			head = [next(myfile) for x in xrange(n)]
 		print head
 
-	def create_empty():
+	def create_empty(self):
 		with open("html/web.html",'w+') as new_file:
 			with open("html/empty_web.html") as old_file:
 				for line in old_file:
 					new_file.write(line)
 
-	@staticmethod
-	def create_web(num_samples):
+	def create_web(self, num_samples):
 		with open("html/web.html",'w+') as new_file:
 			with open("html/web_bone.html") as old_file:
 				for line in old_file:
@@ -55,7 +54,7 @@ class myHandler(BaseHTTPRequestHandler):
 				if stat("data/samples.txt").st_size == 0:
 					old_file.close()
 					new_file.close()
-					create_empty()
+					self.create_empty()
 				else:
 					with open("data/samples.txt") as samples:
 						for i, line in enumerate(samples):
@@ -64,10 +63,10 @@ class myHandler(BaseHTTPRequestHandler):
 							if i == num_samples - 1:
 								break
 					new_file.write("</table></article></body></html>")
-			except IOError, e:
+			except:
 				old_file.close()
 				new_file.close()
-				create_empty()
+				self.create_empty()
 		old_file.close()
 
 	#Check if cookie is stored in server.
