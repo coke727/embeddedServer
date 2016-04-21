@@ -15,6 +15,7 @@ from subprocess import PIPE
 import Cookie
 import errno
 from datetime import datetime, timedelta
+from Crypto.Cipher import AES
 
 PORT_NUMBER = 80
 samples_show = 20
@@ -86,6 +87,20 @@ class myHandler(BaseHTTPRequestHandler):
 		global cookies
 		cookies.append(( cookie, datetime.now() + timedelta(0, int(cookie['cookietemp']['expires']))))
 
+	#Login validation.
+	def check_login( self, login, password ):
+		try:
+			with open("login.txt", 'r') as file:
+				login_hash = file.readline().strip()
+				password_hash = file.readline().strip()
+			file.close()
+			if(login_hash == hashlib.sha256(login).hexdigest() and password_hash == hashlib.sha256(password).hexdigest()):
+				return True
+			else:
+				return False
+		except:
+			return False
+
 	#Handler for the GET requests
 	def do_GET(self):
 		if self.path=="/":
@@ -142,15 +157,16 @@ class myHandler(BaseHTTPRequestHandler):
 						'CONTENT_TYPE':self.headers['Content-Type'],
 						})
 			
-			login = form["login"].value
-			password = form["password"].value
-			if(True): #TODO Check login and pass
+			login = form["login"].value.strip()
+			password = form["password"].value.strip()
+
+			if(self.check_login(login, password)):
 				#Cookie creation
 				c = Cookie.SimpleCookie()
 				hash_object = hashlib.md5(str(datetime.now()).encode())
 				c['cookietemp'] = str(hash_object.hexdigest())
-				c['cookietemp']['domain'] = "localhost:8080"
-				c['cookietemp']['expires'] = 12000
+				c['cookietemp']['domain'] = "localhost"
+				c['cookietemp']['expires'] = 1200
 				c['cookietemp']['path'] = "/configuration"
 				c['cookietemp']['httponly'] = "true"
 				self.store_cookie(c)

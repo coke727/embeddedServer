@@ -24,13 +24,15 @@ DETALLES:
 6º       ---- cntl+c cerrar hacer popen con daemon stop para que se pare tambien (pensar antes si esto seria correcto).
 7º       ---- si el scp casca enviar todos los archivos que no se enviaron // comprobar si el daemon sigue si el scp ha cascado.
 8º       ---- Preguntar al usuario si esta seguro en los formularios cuando los valores sean ridiculos pero posibles, diciendo que la            bateria se acabara antes etc.
-9º       ---- Implementar autenticacion. Almacenando user y contraseña en dispositivo.
+9º  DONE ---- Implementar autenticacion. Almacenando user y contraseña en dispositivo.
 10º DONE ---- Pantalla de fallo en el login.
 11º      ---- Comprobar que las cookies se borran correctamente.
 12º DONE ---- Crear valor de cookie aleatoreo y diferente cada vez.
-13º	     ---- Cookie gard doesnt work, find another form to ensure cookie exist
-14º      ---- si no hay samples casca al intentar enseñar la web
-15º      ---- añadir información sobre el user a la cookie generada para garantizar aleatoreidad
+13º	DONE ---- Cookie gard doesnt work, find another form to ensure cookie exist
+14º DONE ---- si no hay samples casca al intentar enseñar la web
+15º DONE ---- añadir información sobre el user a la cookie generada para garantizar aleatoreidad
+16º      ---- ir generando nuevos archivos en funcion del numero de muestras --> el generar la web necesitará algo más de lógica
+17º      ---- comprobar cookies falsas, en las que se pueda haber cambiado la fecha o similar -> value como hash de la cookie(?)
 
 Hardware & Energy:
 ------------------
@@ -58,7 +60,13 @@ Last Meeting Kolar
 
 Pass:
 -----
+pi
 tarifni zona sto jedna
+
+Web Pass:
+---------
+weatherman
+rainypiday
 
 Daemon bones:
 -------------
@@ -101,3 +109,41 @@ es guarro, guarro, guarro
 el usuario loguea, el sistema comprueba que está bien, y coge esa pass para descifrar la hash de la contraseña a los datos
 serian dos txt, uno para usuario hash para el login, y el otro con usuario - contraseña de datos cifrada
 o dos sqlite
+
+WPA_SUPLICANT
+-------------
+En /etc/wpa_supplicant/supplicant.conf
+
+country=GB
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+network={
+        ssid="eduroam"
+        eap=TTLS
+        key_mgmt=WPA-EAP
+        anonymous_identity=""
+        identity=""
+        password=""
+        phase2="auth=PAP"
+}
+
+* Activar ssh
+
+PAssword encriptation
+---------------------
+>>> from Crypto.Cipher import AES
+>>> obj = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
+>>> message = "The answer is no"
+>>> ciphertext = obj.encrypt(message)
+>>> ciphertext
+'\xd6\x83\x8dd!VT\x92\xaa`A\x05\xe0\x9b\x8b\xf1'
+>>> obj2 = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
+>>> obj2.decrypt(ciphertext)
+
+Passsword Hash
+--------------
+
+import hashlib
+hash_object = hashlib.sha256(b'Hello World')
+hex_dig = hash_object.hexdigest()
+print(hex_dig)
