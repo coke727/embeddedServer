@@ -13,17 +13,18 @@ WEB & SYS:
 8º  FAIL ---- Js libraries get from RPI2 instead unknown server --> Google no permite su descarga.
 9º  DONE ---- Responsive view
 10º DONE ---- Implementar sesión
+11º      ---- Calendario de modos de ahorro de energia
 
 DETALLES:
 ---------
 1º  DONE ---- raw_input imprime password varias veces, eliminar label del raw_input.
-2º       ---- comprobar que el raw input realmente no almacena nada.
+2º  ~~~~ ---- comprobar que el raw input realmente no almacena nada.
 3º  DONE ---- sensor tiene que hacer un prepend al fichero no un append.
-4º       ---- el post a configuracion se hace validando con 0 como valor minimo, mirar si subir ese minimo o si poner máximo.
+4º  ~~~~ ---- el post a configuracion se hace validando con 0 como valor minimo, mirar si subir ese minimo o si poner máximo.
 5º  DONE ---- comprobar que la conexion scp se realizo correctamente.
 6º       ---- cntl+c cerrar hacer popen con daemon stop para que se pare tambien (pensar antes si esto seria correcto).
 7º       ---- si el scp casca enviar todos los archivos que no se enviaron // comprobar si el daemon sigue si el scp ha cascado.
-8º       ---- Preguntar al usuario si esta seguro en los formularios cuando los valores sean ridiculos pero posibles, diciendo que la            bateria se acabara antes etc.
+8º  ~~~~ ---- Preguntar al usuario si esta seguro en los formularios cuando los valores sean ridiculos pero posibles, diciendo que la            bateria se acabara antes etc.
 9º  DONE ---- Implementar autenticacion. Almacenando user y contraseña en dispositivo.
 10º DONE ---- Pantalla de fallo en el login.
 11º      ---- Comprobar que las cookies se borran correctamente.
@@ -32,7 +33,9 @@ DETALLES:
 14º DONE ---- si no hay samples casca al intentar enseñar la web
 15º DONE ---- añadir información sobre el user a la cookie generada para garantizar aleatoreidad
 16º      ---- ir generando nuevos archivos en funcion del numero de muestras --> el generar la web necesitará algo más de lógica
-17º      ---- comprobar cookies falsas, en las que se pueda haber cambiado la fecha o similar -> value como hash de la cookie(?)
+17º ~~~~ ---- comprobar cookies falsas, en las que se pueda haber cambiado la fecha o similar -> value como hash de la cookie(?)
+18º ~~~~ ---- refactor labels de los forms, directory to store samples ---> añadir que es en la maquina del cliente no en server
+
 
 Hardware & Energy:
 ------------------
@@ -147,3 +150,18 @@ import hashlib
 hash_object = hashlib.sha256(b'Hello World')
 hex_dig = hash_object.hexdigest()
 print(hex_dig)
+
+Scripts bash
+------------
+
+pmnormal:
+
+#!/bin/bash
+sudo ifup wlan0
+sudo cpufreq-set -g ondemand
+
+pmsave:
+
+#!/bin/bash
+sudo ifdown wlan0
+sudo cpufreq-set -g powersave

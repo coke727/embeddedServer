@@ -278,6 +278,19 @@ class myHandler(BaseHTTPRequestHandler):
 			self.wfile.write(f.read())
 			f.close()
 
+		if(self.path == '/pmnormal'):
+			print "[Power mode normal Post]"
+			#TODO eliminar datos de otros modos, overclock etc.
+		if(self.path == '/pm1'):
+			print "[Power mode 1 Post]"
+			#TODO pmnormal.sh -> wifi activado, con underclock, eliminar datos que generen los otros modos etc
+		if(self.path == '/pm2'):
+			print "[Power mode 2 Post]"
+			#TODO modo 2 -> pmsave.sh -> wifi activado segun calendario, con underclock, generar crons necesarios y elimnar datos de los otros modos
+		if(self.path == '/pm3'):
+			print "[Power mode 3 Post]"
+			#TODO modo 3 -> pmsleep.sh -> depender del RTC para encender raspi antes de cada medida o en la fecha pedida por el usuario
+			#hay que eliminar los datos generados por los otros modos y generar los datos necesarios.
 try:
 	#Create a web server and define the handler to manage the
 	#incoming request

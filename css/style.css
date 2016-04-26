@@ -1,3 +1,7 @@
+html {
+	font-family: arial;
+}
+
 nav {
 	width: 100%;
 	margin-bottom: 30px;
@@ -28,8 +32,9 @@ li a:hover {
 }
 
 article {
-	width: 50%;
+	width: 49%;
 	display: inline-block;
+	vertical-align:top;
 }
 
 aside {
@@ -93,6 +98,30 @@ h2 {
 
 .msg.fail {
 	background-color: #DE7676;
+}
+
+.powermode {
+	width: 90%;
+	height: auto;
+	border: 1px solid gray;
+	margin-bottom: 10px;
+	padding: 20px;
+}
+
+.timetable {
+	text-align: right;
+	display: block;
+	width: 100%;
+	padding-right: 20px;
+}
+
+.timetable input {
+	width: 80%
+}
+
+.timetable span {
+	width: 20%
+	text-align: right;
 }
 
 @media screen and (max-width: 1200px){
