@@ -13,7 +13,7 @@ WEB & SYS:
 8º  FAIL ---- Js libraries get from RPI2 instead unknown server --> Google no permite su descarga.
 9º  DONE ---- Responsive view
 10º DONE ---- Implementar sesión
-11º      ---- Calendario de modos de ahorro de energia
+11º DONE ---- Calendario de modos de ahorro de energia
 
 DETALLES:
 ---------
@@ -35,7 +35,8 @@ DETALLES:
 16º      ---- ir generando nuevos archivos en funcion del numero de muestras --> el generar la web necesitará algo más de lógica
 17º ~~~~ ---- comprobar cookies falsas, en las que se pueda haber cambiado la fecha o similar -> value como hash de la cookie(?)
 18º ~~~~ ---- refactor labels de los forms, directory to store samples ---> añadir que es en la maquina del cliente no en server
-
+19º      ---- en pm2 cambiar al modo anterior cuando se salga de los intervalos, sea normal, 1 o 3.
+20º      ---- Preguntar si la validacion en servidor de los datos que hago es correcta, si es necesario que en la configuracion aparezcan los datos de configuracion actuales, si en frontend habria que validar tambien los calendarios. Comentar sobre modo 3 si le vale que sea un tiempo limitado por temas de bateria. Tambien comentar sobre volver al modo anterior entre intervalos del modo 2. Tambien sobre como hago el underclock de la cpu. comentar que el de arm y el de ram no valen de naa y que el de cpu sobretodo por calor. cometnar que el modo 1 seria por defecto y alomejor el modo normal para conectar por hdmi y demas pescas pero no el usual. preguntar tambien por valores default en muestras y frecuencia y cuales serian los valores mminimos antes de mensagito de no pongas eso que la lias.
 
 Hardware & Energy:
 ------------------
@@ -160,7 +161,13 @@ pmnormal:
 sudo ifup wlan0
 sudo cpufreq-set -g ondemand
 
-pmsave:
+pm1:
+
+#!/bin/bash
+sudo ifup wlan0
+sudo cpufreq-set -g powersave
+
+pm2:
 
 #!/bin/bash
 sudo ifdown wlan0

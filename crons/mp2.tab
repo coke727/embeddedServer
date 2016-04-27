@@ -1,0 +1,15 @@
+
+* 1 * * MON echo hola modo2 # mp2 MON
+* 1 * * TUE echo hola modo2 # mp2 TUE
+* 1 * * WED echo hola modo2 # mp2 WED
+* 1 * * THU echo hola modo2 # mp2 THU
+* 1 * * FRI echo hola modo2 # mp2 FRI
+* 1 * * SAT echo hola modo2 # mp2 SAT
+* 1 * * SUN echo hola modo2 # mp2 SUN
+* 2 * * MON echo adios modo2 # !mp2 MON
+* 2 * * TUE echo adios modo2 # !mp2 TUE
+* 2 * * WED echo adios modo2 # !mp2 WED
+* 2 * * THU echo adios modo2 # !mp2 THU
+* 2 * * FRI echo adios modo2 # !mp2 FRI
+* 2 * * SAT echo adios modo2 # !mp2 SAT
+* 2 * * SUN echo adios modo2 # !mp2 SUN

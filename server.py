@@ -16,6 +16,8 @@ import Cookie
 import errno
 from datetime import datetime, timedelta
 from Crypto.Cipher import AES
+from crontab import CronTab
+from crontabs import CronTabs
 
 PORT_NUMBER = 80
 samples_show = 20
@@ -34,6 +36,33 @@ class myHandler(BaseHTTPRequestHandler):
 			return True
 		except ValueError:
 			return False
+
+	def remove_overlap(self, intervals): #sol by http://www.geeksforgeeks.org/merging-intervals/
+		sorted_by_lower_bound = sorted(intervals, key=lambda tup: tup[0])
+		merged = []
+
+		for higher in sorted_by_lower_bound:
+			if not merged:
+				merged.append(higher)
+			else:
+				lower = merged[-1]
+				# test for intersection between lower and higher:
+				# we know via sorting that lower[0] <= higher[0]
+				if higher[0] <= lower[1]:
+					upper_bound = max(lower[1], higher[1])
+					merged[-1] = (lower[0], upper_bound)  # replace by merged interval
+				else:
+					merged.append(higher)
+		return merged
+
+	def getIntervalArray(self, intervals):
+		regex = re.compile("\(\d+,\d+\)")
+		result = []
+		for match in regex.finditer(intervals):
+			interval = eval(match.group(0))
+			if( interval[0] < interval[1]):
+				result.append(interval)
+		return result
 
 	def getSamples(n):
 		with open("data/samples.txt") as myfile:
@@ -279,14 +308,85 @@ class myHandler(BaseHTTPRequestHandler):
 			f.close()
 
 		if(self.path == '/pmnormal'):
-			print "[Power mode normal Post]"
 			#TODO eliminar datos de otros modos, overclock etc.
+			print "[Power mode normal Post]"
+			system("sudo pmnormal")
+
+			cron = CronTab(user='coke')
+			cron.remove_all()
+			cron.write_to_user( user=True )
+			
+			f = open(curdir + sep + "html/configuration.html") 
+			self.send_response(200)
+			self.send_header('Content-type','text/html')
+			self.end_headers()
+			self.wfile.write(f.read())
+			f.close()
+			
 		if(self.path == '/pm1'):
-			print "[Power mode 1 Post]"
 			#TODO pmnormal.sh -> wifi activado, con underclock, eliminar datos que generen los otros modos etc
+			print "[Power mode 1 Post]"
+			system("sudo pm1")
+			
+			cron = CronTab(user='coke')
+			cron.remove_all()
+			cron.write_to_user( user=True )
+
+			f = open(curdir + sep + "html/configuration.html") 
+			self.send_response(200)
+			self.send_header('Content-type','text/html')
+			self.end_headers()
+			self.wfile.write(f.read())
+			f.close()
 		if(self.path == '/pm2'):
-			print "[Power mode 2 Post]"
 			#TODO modo 2 -> pmsave.sh -> wifi activado segun calendario, con underclock, generar crons necesarios y elimnar datos de los otros modos
+			print "[Power mode 2 Post]"
+			form = cgi.FieldStorage(
+				fp=self.rfile,
+				headers=self.headers,
+				environ={'REQUEST_METHOD':'POST',
+						'CONTENT_TYPE':self.headers['Content-Type'],
+						})
+
+			monday = self.remove_overlap(self.getIntervalArray(form["monday"].value))
+			tuesday = self.remove_overlap(self.getIntervalArray(form["tuesday"].value))
+			wednesday = self.remove_overlap(self.getIntervalArray(form["wednesday"].value))
+			thursday = self.remove_overlap(self.getIntervalArray(form["thursday"].value))
+			friday = self.remove_overlap(self.getIntervalArray(form["friday"].value))
+			saturday = self.remove_overlap(self.getIntervalArray(form["saturday"].value))
+			sunday = self.remove_overlap(self.getIntervalArray(form["sunday"].value))
+
+			week = [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+			week_keys = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+			cron = CronTab(user='coke')
+
+			for cron2 in CronTabs():
+				print repr(cron2)
+			
+			for i, day in enumerate(week):
+				job  = cron.new(command='echo hola modo2', comment= 'mp2 '+week_keys[i])
+				job.dow.on(week_keys[i])
+				job.hour.on(day[0][0])
+				for interval in day[1:]:
+					job.hour.also.on(interval[0])
+
+			for i, day in enumerate(week):
+				job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
+				job.dow.on(week_keys[i])
+				job.hour.on(day[0][1])
+				for interval in day[1:]:
+					job.hour.also.on(interval[1])
+
+			cron.write( './crons/mp2.tab' )
+			cron.write_to_user( user=True )
+
+			f = open(curdir + sep + "html/configuration.html") 
+			self.send_response(200)
+			self.send_header('Content-type','text/html')
+			self.end_headers()
+			self.wfile.write(f.read())
+			f.close()
+
 		if(self.path == '/pm3'):
 			print "[Power mode 3 Post]"
 			#TODO modo 3 -> pmsleep.sh -> depender del RTC para encender raspi antes de cada medida o en la fecha pedida por el usuario
