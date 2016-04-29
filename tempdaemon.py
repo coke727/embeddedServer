@@ -85,7 +85,7 @@ def count():
 		temp_c = read_temp() 
 		time_now = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
 		with file(file_path,'r') as original: data = original.read()
-		with file(file_path,'w') as modified: modified.write(str(temp_c) + "; "+ time_now+"\n" + data)
+		with file(file_path,'w+') as modified: modified.write(str(temp_c) + "; "+ time_now+"\n" + data)
 		samples_in_file+=1
 		time.sleep(frequency)
 

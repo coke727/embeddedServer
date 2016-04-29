@@ -35,13 +35,13 @@ DETALLES:
 16º DONE ---- ir generando nuevos archivos en funcion del numero de muestras --> el generar la web necesitará algo más de lógica
 17º ~~~~ ---- comprobar cookies falsas, en las que se pueda haber cambiado la fecha o similar -> value como hash de la cookie(?)
 18º ~~~~ ---- refactor labels de los forms, directory to store samples ---> añadir que es en la maquina del cliente no en server
-19º      ---- en pm2 cambiar al modo anterior cuando se salga de los intervalos, sea normal, 1 o 3.
+19º DONE ---- en pm2 cambiar al modo anterior cuando se salga de los intervalos, sea normal, 1 o 3.
 20º DONE ---- hacer un flujo constante con los archivos, si faltan muestras que las coja del anterior, lo suyo seria hacer un cp del archivo actual al crear el nuevo archivo e ir sobrescriviendo ahi los valores, el problema es que en la primera tanda el archivo esta vacio y eso podria dar problemas como archivos con una sola línea.
 21º      ---- Marcar el modo de energia que se está usando.
-22º      ---- El modo 3 debe ser como el dos, con un calendario.
-23º      ---- al salir de los intervalos del modo 2 o 3 pasar a modo normal o 1
+22º DONE ---- El modo 3 debe ser como el dos, con un calendario.
+23º DONE ---- al salir de los intervalos del modo 2 o 3 pasar a modo normal o 1
 24º ~~~~ ---- mostrar la configuracion actual en la web.
-25º      ---- acordeon con tres modos de introducir el calendario, todos los dias igual, dia a dia un intervalo y modo experto con dia a dia varios intervalos.
+25º DONE ---- acordeon con tres modos de introducir el calendario, todos los dias igual, dia a dia un intervalo y modo experto con dia a dia varios intervalos.
 26º      ---- validar calendarios en front end.
 
 Hardware & Energy:

@@ -22,14 +22,10 @@ from os import listdir
 from os.path import isfile, join
 
 PORT_NUMBER = 80
-MODE_NORMAL = 0
-MODE_1 = 1
-MODE_2 = 2
-MODE_3 = 3
-lastmode = MODE_1
 samples_show = 20
 scp_adress = ""
 scp_frequency = 0
+store_data = False
 frequency = 0
 cookies = []
 samples_path ="./data/"
@@ -115,9 +111,7 @@ class myHandler(BaseHTTPRequestHandler):
 							break
 
 					new_file.write("</table></article></body></html>")
-			except: #TODO capturar caso de que te pidan mas muestras de las que hay porque ahora lo que hace es saltar una 
-			#excepcion cuando intenta abrir el siguiente archivo pero no le hay, mirar el numero de archivos en el array y si
-			#file_index es mayor del numero de archivos parar.
+			except:
 				old_file.close()
 				new_file.close()
 				self.create_empty()
@@ -201,6 +195,7 @@ class myHandler(BaseHTTPRequestHandler):
 			self.send_error(404,'File Not Found: %s' % self.path)
 
 	def do_POST(self):
+
 		if(self.path == '/login'):
 			print "[Login Post]"
 			form = cgi.FieldStorage(
@@ -298,6 +293,7 @@ class myHandler(BaseHTTPRequestHandler):
 
 
 		if(self.path == '/scp'):
+			global store_data
 			isDataCorrect = False
 
 			print "[SCP Post]"
@@ -308,9 +304,25 @@ class myHandler(BaseHTTPRequestHandler):
 						'CONTENT_TYPE':self.headers['Content-Type'],
 						})
 
+			if 'check' in form:
+				store_data = True
+			else:
+				store_data = False
+
 			#Data validation
 			if self.isInt(form["scpfrequency"].value) and self.isInt(form["port"].value) and form["scp"].value and form["user"].value and form["directory"].value and form["password"].value:
 				isDataCorrect = True
+
+			#Store data if user wants.
+			if store_data:
+				with file("./scp.txt",'w+') as scpfile:
+					scpfile.write(form["user"].value+"\n")
+					scpfile.write(form["scp"].value+"\n")
+					scpfile.write(form["directory"].value+"\n")
+					scpfile.write(form["port"].value+"\n")
+					scpfile.write(form["password"].value+"\n")
+					scpfile.write(form["scpfrequency"].value+"\n")
+				scpfile.close()
 
 			#Create scp task.
 			#TODO encriptar datos que se pasan al script (?)
@@ -332,8 +344,6 @@ class myHandler(BaseHTTPRequestHandler):
 			f.close()
 
 		if(self.path == '/pmnormal'):
-			global lastmode
-			lastmode = MODE_NORMAL
 			#TODO eliminar datos de otros modos, overclock etc.
 			print "[Power mode normal Post]"
 			system("sudo pmnormal")
@@ -350,8 +360,6 @@ class myHandler(BaseHTTPRequestHandler):
 			f.close()
 			
 		if(self.path == '/pm1'):
-			global lastmode
-			lastmode = MODE_1
 			#TODO pmnormal.sh -> wifi activado, con underclock, eliminar datos que generen los otros modos etc
 			print "[Power mode 1 Post]"
 			system("sudo pm1")
@@ -366,9 +374,9 @@ class myHandler(BaseHTTPRequestHandler):
 			self.end_headers()
 			self.wfile.write(f.read())
 			f.close()
-		if(self.path == '/pm2'):
+		if(self.path == '/pm2_multiple'):
 			#TODO elimnar datos de los otros modos
-			print "[Power mode 2 Post]"
+			print "[Power mode 2 Post: Multiple intervals]"
 
 			#Post form recover
 			form = cgi.FieldStorage(
@@ -401,10 +409,7 @@ class myHandler(BaseHTTPRequestHandler):
 
 			#Create cronjobs for exist from mode 2 to the last mode used.
 			for i, day in enumerate(week):
-				if(lasmode == MODE_NORMAL):
-					job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
-				else:
-					job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
+				job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
 				job.dow.on(week_keys[i])
 				job.hour.on(day[0][1])
 				for interval in day[1:]:
@@ -420,7 +425,92 @@ class myHandler(BaseHTTPRequestHandler):
 			self.end_headers()
 			self.wfile.write(f.read())
 			f.close()
+		if(self.path == '/pm2_one'):
+			print "[Power mode 2 Post: One interval]"
 
+			#Post form recover
+			form = cgi.FieldStorage(
+				fp=self.rfile,
+				headers=self.headers,
+				environ={'REQUEST_METHOD':'POST',
+						'CONTENT_TYPE':self.headers['Content-Type'],
+						})
+
+			monday = tuesday = wednesday = thursday = friday = saturday = sunday = (int(form["start"].value),int(form["end"].value))
+
+			week = [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+			week_keys = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+			cron = CronTab(user='coke')
+
+			#Create cronjobs for enter in mode 2
+			for i, day in enumerate(week):
+				job  = cron.new(command='echo hola modo2', comment= 'mp2 '+week_keys[i])
+				job.dow.on(week_keys[i])
+				job.hour.on(day[0])
+
+			#Create cronjobs for exist from mode 2 to the last mode used.
+			for i, day in enumerate(week):
+				job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
+				job.dow.on(week_keys[i])
+				job.hour.on(day[1])
+
+			#Write crontab in a file and in system cron table.
+			cron.write( './crons/mp2.tab' )
+			cron.write_to_user( user=True )
+
+			f = open(curdir + sep + "html/configuration.html") 
+			self.send_response(200)
+			self.send_header('Content-type','text/html')
+			self.end_headers()
+			self.wfile.write(f.read())
+			f.close()
+
+		if(self.path == '/pm2_eachday'):
+			print "[Power mode 2 Post: Multiple intervals]"
+
+			#Post form recover
+			form = cgi.FieldStorage(
+				fp=self.rfile,
+				headers=self.headers,
+				environ={'REQUEST_METHOD':'POST',
+						'CONTENT_TYPE':self.headers['Content-Type'],
+						})
+
+			#Parse and validation of the form data.
+			monday = (int(form["monday_start"].value), int(form["monday_end"].value))
+			tuesday = (int(form["tuesday_start"].value), int(form["tuesday_end"].value))
+			wednesday = (int(form["wednesday_start"].value), int(form["wednesday_end"].value))
+			thursday = (int(form["thursday_start"].value), int(form["thursday_end"].value))
+			friday = (int(form["friday_start"].value), int(form["friday_end"].value))
+			saturday = (int(form["saturday_start"].value), int(form["saturday_end"].value))
+			sunday = (int(form["sunday_start"].value), int(form["sunday_end"].value))
+
+			week = [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+			week_keys = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+			cron = CronTab(user='coke')
+
+			#Create cronjobs for enter in mode 2
+			for i, day in enumerate(week):
+				job  = cron.new(command='echo hola modo2', comment= 'mp2 '+week_keys[i])
+				job.dow.on(week_keys[i])
+				job.hour.on(day[0])
+
+			#Create cronjobs for exist from mode 2 to the last mode used.
+			for i, day in enumerate(week):
+				job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
+				job.dow.on(week_keys[i])
+				job.hour.on(day[1])
+
+			#Write crontab in a file and in system cron table.
+			cron.write( './crons/mp2.tab' )
+			cron.write_to_user( user=True )
+
+			f = open(curdir + sep + "html/configuration.html") 
+			self.send_response(200)
+			self.send_header('Content-type','text/html')
+			self.end_headers()
+			self.wfile.write(f.read())
+			f.close()
 		if(self.path == '/pm3'):
 			print "[Power mode 3 Post]"
 			#TODO modo 3 -> pmsleep.sh -> depender del RTC para encender raspi antes de cada medida o en la fecha pedida por el usuario
