@@ -168,3 +168,8 @@ Last Meeting Kolar
 * El Wifi para tener ip visible consiste en el dhcp pasarle el nombre correcto tipo usuarioVut~nombrednscorto.fit.vutbrno.cz hay que investigar sobre esto porque no lo tengo del todo claro pero siempre puedo preguntar a los técnicos o a los colleges de la oficina.
   - http://www.stud.fit.vutbr.cz/~user/
   - AMEND el user es dhcps<ipnum>
+
+  Detalles de autoria
+  -------------------
+
+  acordeon: http://uniondesign.ca/simple-accordion-without-jquery-ui/

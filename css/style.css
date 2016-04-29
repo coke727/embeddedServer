@@ -132,3 +132,30 @@ h2 {
 		width: 100%
 	}
 }
+
+/*
+* CONFIGURATION CSS
+*/
+
+.accordion-toggle {cursor: pointer;}
+.accordion-content {
+	display: none;
+	border: 1px solid gray;
+	padding: 20px;
+}
+.accordion-content.default {
+	display: block;
+}
+
+.accordion h4 {
+	margin: 0;
+	margin-top: 10px;
+	border: 1px solid gray;
+	padding: 5px;
+	background-color: #4CAF50;
+	color: white;
+}
+
+.accordion h4 span{
+	float: right;
+}

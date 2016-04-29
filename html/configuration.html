@@ -3,6 +3,8 @@
 	<meta charset="utf-8">
 	<title>Configuration</title>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	<script type="text/javascript" src="js/configuration.js"></script>
 </head>
 <body>
 	<nav>
@@ -70,37 +72,96 @@
 				<h2>Saving Mode 2</h2>
 				<p>In this mode the system decreases the cpu performance and only switch on the wifi module and the http server in the times set by the user in the timetable. This mode increases de battery life time considerably.
 				</p>
-				<p>
-					Fill the timetable using time intervals for each day. It must have at least one interval on each day.
-					The interval unit is in hours, half hours are not allowed.
-					The intervals set in the table represent the hours during this mode is active. The rest of the time the device will change to the last mode set by the user.
-					The intervals must be separated by comas and following the sintaxis: (init hour, finish hour)
-				</p>
-				<form method="post" action="http://localhost/pm2">
-					<div class="timetable">Monday: <input type="text" name="monday" value="" placeholder="Time intervals"></div>
-					<div class="timetable">Tuesday: <input type="text" name="tuesday" value="" placeholder="Time intervals"></div>
-					<div class="timetable">Wednesday: <input type="text" name="wednesday" value="" placeholder="Time intervals"></div>
-					<div class="timetable">Thursday: <input type="text" name="thursday" value="" placeholder="Time intervals"></div>
-					<div class="timetable">Friday: <input type="text" name="friday" value="" placeholder="Time intervals"></div>
-					<div class="timetable">Saturday: <input type="text" name="saturday" value="" placeholder="Time intervals"></div>
-					<div class="timetable">Sunday: <input type="text" name="sunday" value="" placeholder="Time intervals"></div>
-					<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
-				</form>
+				<div class="accordion">
+					<h4 class="accordion-toggle">One interval for all week days <span>+</span></h4>
+					<div class="accordion-content default">
+						<p>Set the start and end hour for the mode 2 in each days of the week. The interval must have a duration of 23 hours as maximun.</p>
+						<form method="post" action="http://localhost/pm2">
+							<div class="timetable">Start: <input type="number" min="0" max="23" name="start" value="" placeholder="Start hour"></div>
+							<div class="timetable">End: <input type="number" min="0" max="23" name="end" value="" placeholder="End hour"></div>	<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
+						</form>
+					</div>
+					<h4 class="accordion-toggle">One diferent interval each week day <span>+</span></h4>
+					<div class="accordion-content">
+						<form method="post" action="http://localhost/pm2">
+							<div class="timetable">Monday: <input type="text" name="monday" value="" placeholder="Start hour"><input type="text" name="monday" value="" placeholder="End hour"></div>
+							<div class="timetable">Tuesday: <input type="text" name="tuesday" value="" placeholder="Start hour"><input type="text" name="tuesday" value="" placeholder="End hour"></div>
+							<div class="timetable">Wednesday: <input type="text" name="wednesday" value="" placeholder="Start hour"><input type="text" name="wednesday" value="" placeholder="End hour"></div>
+							<div class="timetable">Thursday: <input type="text" name="thursday" value="" placeholder="Start hour"><input type="text" name="thursday" value="" placeholder="End hour"></div>
+							<div class="timetable">Friday: <input type="text" name="friday" value="" placeholder="Start hour"><input type="text" name="friday" value="" placeholder="End hour"></div>
+							<div class="timetable">Saturday: <input type="text" name="saturday" value="" placeholder="Start hour"><input type="text" name="saturday" value="" placeholder="End hour"></div>
+							<div class="timetable">Sunday: <input type="text" name="sunday" value="" placeholder="Start hour"><input type="text" name="sunday" value="" placeholder="End hour"></div>
+							<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
+						</form>
+					</div>
+					<h4 class="accordion-toggle">Multiple intervals for each week day <span>+</span></h4>
+					<div class="accordion-content">
+						<p>
+							Fill the timetable using time intervals for each day. It must have at least one interval on each day.
+							The interval unit is in hours, half hours are not allowed.
+							The intervals set in the table represent the hours during this mode is active. The rest of the time the device will change to the last mode set by the user.
+							The intervals must be separated by comas and following the sintaxis: (init hour, finish hour)
+						</p>
+						<form method="post" action="http://localhost/pm2">
+							<div class="timetable">Monday: <input type="text" name="monday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Tuesday: <input type="text" name="tuesday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Wednesday: <input type="text" name="wednesday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Thursday: <input type="text" name="thursday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Friday: <input type="text" name="friday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Saturday: <input type="text" name="saturday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Sunday: <input type="text" name="sunday" value="" placeholder="Time intervals"></div>
+							<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
+						</form>
+					</div>
+				</div>
 			</div>
 			<div class="powermode">
 				<h2>Saving Mode 3</h2>
 				<p>This special mode shutdown the device during a time period set by the user. The device will only wake up for take the samples in the periods given by the user. 
 				</p>
 
-				<p>This mode can be set for 7 days and 23 hours as maximun. Then system will change to the last mode activated by the user.
-				</p>
-
-				<form method="post" action="http://localhost/pm3">
-					<div class="timetable">Days: <input type="number" name="days" value="" placeholder="Days" min="0" max="7"></div>
-					<div class="timetable">Hours: <input type="number" name="hours" value="" placeholder="Hours" min="0" max="23"></div>
-					<p class="submit"><input type="submit" name="commit" value="Switch to mode 3"></p>
-				</form>
-			</div>
+				<div class="accordion">
+					<h4 class="accordion-toggle">One interval for all week days <span>+</span></h4>
+					<div class="accordion-content default">
+						<p>Set the start and end hour for the mode 2 in each days of the week. The interval must have a duration of 23 hours as maximun.</p>
+						<form method="post" action="http://localhost/pm2">
+							<div class="timetable">Start: <input type="number" min="0" max="23" name="start" value="" placeholder="Start hour"></div>
+							<div class="timetable">End: <input type="number" min="0" max="23" name="end" value="" placeholder="End hour"></div>	<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
+						</form>
+					</div>
+					<h4 class="accordion-toggle">One diferent interval each week day <span>+</span></h4>
+					<div class="accordion-content">
+						<form method="post" action="http://localhost/pm2">
+							<div class="timetable">Monday: <input type="text" name="monday" value="" placeholder="Start hour"><input type="text" name="monday" value="" placeholder="End hour"></div>
+							<div class="timetable">Tuesday: <input type="text" name="tuesday" value="" placeholder="Start hour"><input type="text" name="tuesday" value="" placeholder="End hour"></div>
+							<div class="timetable">Wednesday: <input type="text" name="wednesday" value="" placeholder="Start hour"><input type="text" name="wednesday" value="" placeholder="End hour"></div>
+							<div class="timetable">Thursday: <input type="text" name="thursday" value="" placeholder="Start hour"><input type="text" name="thursday" value="" placeholder="End hour"></div>
+							<div class="timetable">Friday: <input type="text" name="friday" value="" placeholder="Start hour"><input type="text" name="friday" value="" placeholder="End hour"></div>
+							<div class="timetable">Saturday: <input type="text" name="saturday" value="" placeholder="Start hour"><input type="text" name="saturday" value="" placeholder="End hour"></div>
+							<div class="timetable">Sunday: <input type="text" name="sunday" value="" placeholder="Start hour"><input type="text" name="sunday" value="" placeholder="End hour"></div>
+							<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
+						</form>
+					</div>
+					<h4 class="accordion-toggle">Multiple intervals for each week day <span>+</span></h4>
+					<div class="accordion-content">
+						<p>
+							Fill the timetable using time intervals for each day. It must have at least one interval on each day.
+							The interval unit is in hours, half hours are not allowed.
+							The intervals set in the table represent the hours during this mode is active. The rest of the time the device will change to the last mode set by the user.
+							The intervals must be separated by comas and following the sintaxis: (init hour, finish hour)
+						</p>
+						<form method="post" action="http://localhost/pm2">
+							<div class="timetable">Monday: <input type="text" name="monday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Tuesday: <input type="text" name="tuesday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Wednesday: <input type="text" name="wednesday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Thursday: <input type="text" name="thursday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Friday: <input type="text" name="friday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Saturday: <input type="text" name="saturday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Sunday: <input type="text" name="sunday" value="" placeholder="Time intervals"></div>
+							<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
+						</form>
+					</div>
+				</div>
 		</div>
 	</article>
 	</center>
