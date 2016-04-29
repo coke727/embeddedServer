@@ -18,13 +18,21 @@ from datetime import datetime, timedelta
 from Crypto.Cipher import AES
 from crontab import CronTab
 from crontabs import CronTabs
+from os import listdir
+from os.path import isfile, join
 
 PORT_NUMBER = 80
+MODE_NORMAL = 0
+MODE_1 = 1
+MODE_2 = 2
+MODE_3 = 3
+lastmode = MODE_1
 samples_show = 20
 scp_adress = ""
 scp_frequency = 0
 frequency = 0
 cookies = []
+samples_path ="./data/"
 
 #This class will handles any incoming request from the browser 
 class myHandler(BaseHTTPRequestHandler):
@@ -37,6 +45,7 @@ class myHandler(BaseHTTPRequestHandler):
 		except ValueError:
 			return False
 
+	# Simplify the intervals array returning a new array simplified.
 	def remove_overlap(self, intervals): #sol by http://www.geeksforgeeks.org/merging-intervals/
 		sorted_by_lower_bound = sorted(intervals, key=lambda tup: tup[0])
 		merged = []
@@ -55,12 +64,13 @@ class myHandler(BaseHTTPRequestHandler):
 					merged.append(higher)
 		return merged
 
+	# Parse a string representation of an interval array toa  real interval array.
 	def getIntervalArray(self, intervals):
 		regex = re.compile("\(\d+,\d+\)")
 		result = []
 		for match in regex.finditer(intervals):
 			interval = eval(match.group(0))
-			if( interval[0] < interval[1]):
+			if( interval[0] < interval[1] and interval[0] >= 0 and interval[1] >= 1):
 				result.append(interval)
 		return result
 
@@ -76,24 +86,38 @@ class myHandler(BaseHTTPRequestHandler):
 					new_file.write(line)
 
 	def create_web(self, num_samples):
+		datafiles = [f for f in listdir(samples_path) if isfile(join(samples_path, f))]
+		datafiles.sort(reverse=True)
+		
 		with open("html/web.html",'w+') as new_file:
 			with open("html/web_bone.html") as old_file:
 				for line in old_file:
 					new_file.write(line)
 			try:
-				if stat("data/samples.txt").st_size == 0:
+				if stat(samples_path+datafiles[0]).st_size == 0:
 					old_file.close()
 					new_file.close()
 					self.create_empty()
 				else:
-					with open("data/samples.txt") as samples:
-						for i, line in enumerate(samples):
-							tupla = [x.strip() for x in line.split(';')]
-							new_file.write("<tr><td>" + tupla[0] + "</td><td>" + tupla[1] + "</td></tr>")
-							if i == num_samples - 1:
-								break
+					samples_added = 0
+					file_index = 0
+					while samples_added < num_samples:
+						with open(samples_path+datafiles[file_index]) as samples:
+							for i, line in enumerate(samples):
+								tupla = [x.strip() for x in line.split(';')]
+								new_file.write("<tr><td>" + tupla[0] + "</td><td>" + tupla[1] + "</td></tr>")
+								samples_added+=1
+								if samples_added == num_samples:
+									break
+						samples.close()
+						file_index+=1
+						if(file_index >= len(datafiles)):
+							break
+
 					new_file.write("</table></article></body></html>")
-			except:
+			except: #TODO capturar caso de que te pidan mas muestras de las que hay porque ahora lo que hace es saltar una 
+			#excepcion cuando intenta abrir el siguiente archivo pero no le hay, mirar el numero de archivos en el array y si
+			#file_index es mayor del numero de archivos parar.
 				old_file.close()
 				new_file.close()
 				self.create_empty()
@@ -308,6 +332,8 @@ class myHandler(BaseHTTPRequestHandler):
 			f.close()
 
 		if(self.path == '/pmnormal'):
+			global lastmode
+			lastmode = MODE_NORMAL
 			#TODO eliminar datos de otros modos, overclock etc.
 			print "[Power mode normal Post]"
 			system("sudo pmnormal")
@@ -324,6 +350,8 @@ class myHandler(BaseHTTPRequestHandler):
 			f.close()
 			
 		if(self.path == '/pm1'):
+			global lastmode
+			lastmode = MODE_1
 			#TODO pmnormal.sh -> wifi activado, con underclock, eliminar datos que generen los otros modos etc
 			print "[Power mode 1 Post]"
 			system("sudo pm1")
@@ -339,8 +367,10 @@ class myHandler(BaseHTTPRequestHandler):
 			self.wfile.write(f.read())
 			f.close()
 		if(self.path == '/pm2'):
-			#TODO modo 2 -> pmsave.sh -> wifi activado segun calendario, con underclock, generar crons necesarios y elimnar datos de los otros modos
+			#TODO elimnar datos de los otros modos
 			print "[Power mode 2 Post]"
+
+			#Post form recover
 			form = cgi.FieldStorage(
 				fp=self.rfile,
 				headers=self.headers,
@@ -348,6 +378,7 @@ class myHandler(BaseHTTPRequestHandler):
 						'CONTENT_TYPE':self.headers['Content-Type'],
 						})
 
+			#Parse and validation of the form data.
 			monday = self.remove_overlap(self.getIntervalArray(form["monday"].value))
 			tuesday = self.remove_overlap(self.getIntervalArray(form["tuesday"].value))
 			wednesday = self.remove_overlap(self.getIntervalArray(form["wednesday"].value))
@@ -359,10 +390,8 @@ class myHandler(BaseHTTPRequestHandler):
 			week = [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
 			week_keys = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 			cron = CronTab(user='coke')
-
-			for cron2 in CronTabs():
-				print repr(cron2)
 			
+			#Create cronjobs for enter in mode 2
 			for i, day in enumerate(week):
 				job  = cron.new(command='echo hola modo2', comment= 'mp2 '+week_keys[i])
 				job.dow.on(week_keys[i])
@@ -370,13 +399,18 @@ class myHandler(BaseHTTPRequestHandler):
 				for interval in day[1:]:
 					job.hour.also.on(interval[0])
 
+			#Create cronjobs for exist from mode 2 to the last mode used.
 			for i, day in enumerate(week):
-				job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
+				if(lasmode == MODE_NORMAL):
+					job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
+				else:
+					job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
 				job.dow.on(week_keys[i])
 				job.hour.on(day[0][1])
 				for interval in day[1:]:
 					job.hour.also.on(interval[1])
 
+			#Write crontab in a file and in system cron table.
 			cron.write( './crons/mp2.tab' )
 			cron.write_to_user( user=True )
 
