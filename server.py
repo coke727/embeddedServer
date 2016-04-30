@@ -7,7 +7,6 @@ import SocketServer
 import logging
 import cgi
 import sys
-import re
 import base64
 import subprocess
 import hashlib
@@ -21,6 +20,7 @@ from crontabs import CronTabs
 from os import listdir
 from os.path import isfile, join
 from CookieStorage import CookieStorage
+import utils
 
 
 PORT_NUMBER = 80
@@ -44,35 +44,6 @@ class myHandler(BaseHTTPRequestHandler):
 			return True
 		except ValueError:
 			return False
-
-	# Simplify the intervals array returning a new array simplified.
-	def remove_overlap(self, intervals): #sol by http://www.geeksforgeeks.org/merging-intervals/
-		sorted_by_lower_bound = sorted(intervals, key=lambda tup: tup[0])
-		merged = []
-
-		for higher in sorted_by_lower_bound:
-			if not merged:
-				merged.append(higher)
-			else:
-				lower = merged[-1]
-				# test for intersection between lower and higher:
-				# we know via sorting that lower[0] <= higher[0]
-				if higher[0] <= lower[1]:
-					upper_bound = max(lower[1], higher[1])
-					merged[-1] = (lower[0], upper_bound)  # replace by merged interval
-				else:
-					merged.append(higher)
-		return merged
-
-	# Parse a string representation of an interval array toa  real interval array.
-	def getIntervalArray(self, intervals):
-		regex = re.compile("\(\d+,\d+\)")
-		result = []
-		for match in regex.finditer(intervals):
-			interval = eval(match.group(0))
-			if( interval[0] < interval[1] and interval[0] >= 0 and interval[1] >= 1):
-				result.append(interval)
-		return result
 
 	def getSamples(n):
 		with open("data/samples.txt") as myfile:
@@ -413,13 +384,13 @@ class myHandler(BaseHTTPRequestHandler):
 						})
 
 			#Parse and validation of the form data.
-			monday = self.remove_overlap(self.getIntervalArray(form["monday"].value))
-			tuesday = self.remove_overlap(self.getIntervalArray(form["tuesday"].value))
-			wednesday = self.remove_overlap(self.getIntervalArray(form["wednesday"].value))
-			thursday = self.remove_overlap(self.getIntervalArray(form["thursday"].value))
-			friday = self.remove_overlap(self.getIntervalArray(form["friday"].value))
-			saturday = self.remove_overlap(self.getIntervalArray(form["saturday"].value))
-			sunday = self.remove_overlap(self.getIntervalArray(form["sunday"].value))
+			monday = utils.remove_overlap(utils.getIntervalArray(form["monday"].value))
+			tuesday = utils.remove_overlap(utils.getIntervalArray(form["tuesday"].value))
+			wednesday = utils.remove_overlap(utils.getIntervalArray(form["wednesday"].value))
+			thursday = utils.remove_overlap(utils.getIntervalArray(form["thursday"].value))
+			friday = utils.remove_overlap(utils.getIntervalArray(form["friday"].value))
+			saturday = utils.remove_overlap(utils.getIntervalArray(form["saturday"].value))
+			sunday = utils.remove_overlap(utils.getIntervalArray(form["sunday"].value))
 
 			week = [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
 			week_keys = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
