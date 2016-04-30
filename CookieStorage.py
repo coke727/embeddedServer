@@ -20,3 +20,14 @@ class CookieStorage(object):
 	#Store cookie in server when a correct login is perform.
 	def store_cookie( self, cookie ):
 		self.cookies.append(( cookie, datetime.now() + timedelta(0, int(cookie['cookietemp']['expires']))))
+
+	def check_session( self, headers):
+		if "Cookie" in headers:
+			c = Cookie.SimpleCookie(headers["Cookie"])
+			#Cookie validation
+			if(self.check_cookie(c)):
+				return True
+			else:
+				return False
+		else:
+			return False

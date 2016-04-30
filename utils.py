@@ -1,5 +1,10 @@
 import re
 import hashlib
+from crontab import CronTab
+from crontabs import CronTabs
+
+crontab_user = 'coke'
+week_keys = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
 # Simplify the intervals array returning a new array simplified.
 def remove_overlap( intervals ): #sol by http://www.geeksforgeeks.org/merging-intervals/
@@ -37,6 +42,10 @@ def isInt(s):
 	except ValueError:
 		return False
 
+# --------------- #
+# Login Functions #
+# --------------- #
+
 #Login validation.
 def check_login( login, password ):
 	try:
@@ -50,3 +59,72 @@ def check_login( login, password ):
 			return False
 	except:
 		return False
+
+# -------------------------- #
+# Crontab Creation Functions #
+# -------------------------- #
+
+def remove_crontab():
+		cron = CronTab(user=crontab_user)
+		cron.remove_all()
+		cron.write_to_user( user=True )
+
+def create_crontab( form, isAdvanced ):
+	#Parse and validation of the form data.
+	if(isAdvanced):
+		monday = remove_overlap(getIntervalArray(form["monday"].value))
+		tuesday = remove_overlap(getIntervalArray(form["tuesday"].value))
+		wednesday = remove_overlap(getIntervalArray(form["wednesday"].value))
+		thursday = remove_overlap(getIntervalArray(form["thursday"].value))
+		friday = remove_overlap(getIntervalArray(form["friday"].value))
+		saturday = remove_overlap(getIntervalArray(form["saturday"].value))
+		sunday = remove_overlap(getIntervalArray(form["sunday"].value))
+
+		write_crontab([monday,tuesday,wednesday,thursday,friday,saturday,sunday], True)
+	else:
+		#Parse and validation of the form data.
+		monday = (int(form["monday_start"].value), int(form["monday_end"].value))
+		tuesday = (int(form["tuesday_start"].value), int(form["tuesday_end"].value))
+		wednesday = (int(form["wednesday_start"].value), int(form["wednesday_end"].value))
+		thursday = (int(form["thursday_start"].value), int(form["thursday_end"].value))
+		friday = (int(form["friday_start"].value), int(form["friday_end"].value))
+		saturday = (int(form["saturday_start"].value), int(form["saturday_end"].value))
+		sunday = (int(form["sunday_start"].value), int(form["sunday_end"].value))
+
+		write_crontab([monday,tuesday,wednesday,thursday,friday,saturday,sunday], False)
+
+
+def write_crontab( week, isAdvanced):
+	cron = CronTab(user=crontab_user)
+	
+	if(isAdvanced):
+		#Create cronjobs for enter in mode 2
+		for i, day in enumerate(week):
+			job  = cron.new(command='echo hola modo2', comment= 'mp2 '+week_keys[i])
+			job.dow.on(week_keys[i])
+			job.hour.on(day[0][0])
+			for interval in day[1:]:
+				job.hour.also.on(interval[0])
+
+		#Create cronjobs for exist from mode 2 to the last mode used.
+		for i, day in enumerate(week):
+			job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
+			job.dow.on(week_keys[i])
+			job.hour.on(day[0][1])
+			for interval in day[1:]:
+				job.hour.also.on(interval[1])
+	else:
+		#Create cronjobs for enter in mode 2
+		for i, day in enumerate(week):
+			job  = cron.new(command='echo hola modo2', comment= 'mp2 '+week_keys[i])
+			job.dow.on(week_keys[i])
+			job.hour.on(day[0])
+
+		#Create cronjobs for exist from mode 2 to the last mode used.
+		for i, day in enumerate(week):
+			job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
+			job.dow.on(week_keys[i])
+			job.hour.on(day[1])
+	#Write crontab in a file and in system cron table.
+	cron.write( './crons/mp2.tab' )
+	cron.write_to_user( user=True )

@@ -44,8 +44,8 @@ DETALLES:
 25º DONE ---- acordeon con tres modos de introducir el calendario, todos los dias igual, dia a dia un intervalo y modo experto con dia a dia varios intervalos.
 26º      ---- validar calendarios en front end.
 27º DONE ---- guardear los post a scp con sesion
-28º      ---- guardear modos de energia con sesion
-29º      ---- sacar a funcion comprobacion de cookie
+28º DONE ---- guardear modos de energia con sesion
+29º DONE ---- sacar a funcion comprobacion de cookie
 
 Hardware & Energy:
 ------------------

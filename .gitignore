@@ -1,0 +1,6 @@
+backups
+html/web.html
+crons
+*.pyc
+power_saving_notes.txt
+data
