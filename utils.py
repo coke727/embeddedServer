@@ -28,3 +28,10 @@ def getIntervalArray( intervals ):
 		if( interval[0] < interval[1] and interval[0] >= 0 and interval[1] >= 1):
 			result.append(interval)
 	return result
+
+def isInt(s):
+		try: 
+			int(s)
+			return True
+		except ValueError:
+			return False

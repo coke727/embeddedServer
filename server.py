@@ -17,9 +17,9 @@ from datetime import datetime
 from Crypto.Cipher import AES
 from crontab import CronTab
 from crontabs import CronTabs
-from os import listdir
-from os.path import isfile, join
 from CookieStorage import CookieStorage
+from web_maker import create_empty, create_web
+import re
 import utils
 
 
@@ -31,66 +31,18 @@ scp_frequency = 0
 store_data = False
 frequency = 0
 cookie_storage = CookieStorage()
-samples_path ="./data/"
+
 
 
 #This class will handles any incoming request from the browser 
 class myHandler(BaseHTTPRequestHandler):
 
-	@staticmethod
-	def isInt(s):
-		try: 
-			int(s)
-			return True
-		except ValueError:
-			return False
+	
 
 	def getSamples(n):
 		with open("data/samples.txt") as myfile:
 			head = [next(myfile) for x in xrange(n)]
 		print head
-
-	def create_empty(self):
-		with open("html/web.html",'w+') as new_file:
-			with open("html/empty_web.html") as old_file:
-				for line in old_file:
-					new_file.write(line)
-
-	def create_web(self, num_samples):
-		datafiles = [f for f in listdir(samples_path) if isfile(join(samples_path, f))]
-		datafiles.sort(reverse=True)
-		
-		with open("html/web.html",'w+') as new_file:
-			with open("html/web_bone.html") as old_file:
-				for line in old_file:
-					new_file.write(line)
-			try:
-				if stat(samples_path+datafiles[0]).st_size == 0:
-					old_file.close()
-					new_file.close()
-					self.create_empty()
-				else:
-					samples_added = 0
-					file_index = 0
-					while samples_added < num_samples:
-						with open(samples_path+datafiles[file_index]) as samples:
-							for i, line in enumerate(samples):
-								tupla = [x.strip() for x in line.split(';')]
-								new_file.write("<tr><td>" + tupla[0] + "</td><td>" + tupla[1] + "</td></tr>")
-								samples_added+=1
-								if samples_added == num_samples:
-									break
-						samples.close()
-						file_index+=1
-						if(file_index >= len(datafiles)):
-							break
-
-					new_file.write("</table></article></body></html>")
-			except:
-				old_file.close()
-				new_file.close()
-				self.create_empty()
-		old_file.close()
 
 	#Login validation.
 	def check_login( self, login, password ):
@@ -109,7 +61,7 @@ class myHandler(BaseHTTPRequestHandler):
 	#Handler for the GET requests
 	def do_GET(self):
 		if self.path=="/":
-			self.create_web(samples_show)
+			create_web(samples_show)
 			self.path="html/web.html"
 		if self.path=="/configuration":
 			if "Cookie" in self.headers:
@@ -220,12 +172,12 @@ class myHandler(BaseHTTPRequestHandler):
 						self.send_response(402)
 						self.end_headers()
 					else:
-						if( self.isInt( form["samples"].value ) and int( form["samples"].value ) > 0 ):
+						if( utils.isInt( form["samples"].value ) and int( form["samples"].value ) > 0 ):
 							samples_show = int(form["samples"].value)
 						else:
 							isDataCorrect = False
 
-						if( self.isInt( form["frequency"].value ) and int( form["frequency"].value ) > 0 ):
+						if( utils.isInt( form["frequency"].value ) and int( form["frequency"].value ) > 0 ):
 							frequency = int(form["frequency"].value)
 							system("python tempdaemon.py restart " + str(frequency))
 						else:
@@ -274,7 +226,7 @@ class myHandler(BaseHTTPRequestHandler):
 						store_data = False
 
 					#Data validation
-					if self.isInt(form["scpfrequency"].value) and self.isInt(form["port"].value) and form["scp"].value and form["user"].value and form["directory"].value and form["password"].value:
+					if utils.isInt(form["scpfrequency"].value) and utils.isInt(form["port"].value) and form["scp"].value and form["user"].value and form["directory"].value and form["password"].value:
 						isDataCorrect = True
 
 					#Store data if user wants.
