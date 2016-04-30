@@ -1,4 +1,5 @@
 import re
+import hashlib
 
 # Simplify the intervals array returning a new array simplified.
 def remove_overlap( intervals ): #sol by http://www.geeksforgeeks.org/merging-intervals/
@@ -30,8 +31,22 @@ def getIntervalArray( intervals ):
 	return result
 
 def isInt(s):
-		try: 
-			int(s)
+	try: 
+		int(s)
+		return True
+	except ValueError:
+		return False
+
+#Login validation.
+def check_login( login, password ):
+	try:
+		with open("login.txt", 'r') as file:
+			login_hash = file.readline().strip()
+			password_hash = file.readline().strip()
+		file.close()
+		if(login_hash == hashlib.sha256(login).hexdigest() and password_hash == hashlib.sha256(password).hexdigest()):
 			return True
-		except ValueError:
+		else:
 			return False
+	except:
+		return False

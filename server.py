@@ -22,7 +22,6 @@ from web_maker import create_empty, create_web
 import re
 import utils
 
-
 PORT_NUMBER = 80
 configuration_path = "./html/configuration.html"
 samples_show = 20
@@ -32,31 +31,8 @@ store_data = False
 frequency = 0
 cookie_storage = CookieStorage()
 
-
-
 #This class will handles any incoming request from the browser 
 class myHandler(BaseHTTPRequestHandler):
-
-	
-
-	def getSamples(n):
-		with open("data/samples.txt") as myfile:
-			head = [next(myfile) for x in xrange(n)]
-		print head
-
-	#Login validation.
-	def check_login( self, login, password ):
-		try:
-			with open("login.txt", 'r') as file:
-				login_hash = file.readline().strip()
-				password_hash = file.readline().strip()
-			file.close()
-			if(login_hash == hashlib.sha256(login).hexdigest() and password_hash == hashlib.sha256(password).hexdigest()):
-				return True
-			else:
-				return False
-		except:
-			return False
 
 	#Handler for the GET requests
 	def do_GET(self):
@@ -119,7 +95,7 @@ class myHandler(BaseHTTPRequestHandler):
 			login = form["login"].value.strip()
 			password = form["password"].value.strip()
 
-			if(self.check_login(login, password)):
+			if(utils.check_login(login, password)):
 				#Cookie creation
 				c = Cookie.SimpleCookie()
 				hash_object = hashlib.md5(str(datetime.now()).encode())
