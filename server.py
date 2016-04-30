@@ -14,12 +14,14 @@ import hashlib
 from subprocess import PIPE
 import Cookie
 import errno
-from datetime import datetime, timedelta
+from datetime import datetime
 from Crypto.Cipher import AES
 from crontab import CronTab
 from crontabs import CronTabs
 from os import listdir
 from os.path import isfile, join
+from CookieStorage import CookieStorage
+
 
 PORT_NUMBER = 80
 configuration_path = "./html/configuration.html"
@@ -28,8 +30,9 @@ scp_adress = ""
 scp_frequency = 0
 store_data = False
 frequency = 0
-cookies = []
+cookie_storage = CookieStorage()
 samples_path ="./data/"
+
 
 #This class will handles any incoming request from the browser 
 class myHandler(BaseHTTPRequestHandler):
@@ -118,23 +121,6 @@ class myHandler(BaseHTTPRequestHandler):
 				self.create_empty()
 		old_file.close()
 
-	#Check if cookie is stored in server.
-	#TODO comprobar que se eliminan correctamente.
-	def check_cookie( self, cookie ):
-		global cookies
-		for c in cookies:
-			if(c[0]["cookietemp"].value == cookie["cookietemp"].value):
-				return True
-			else: #Check if cookie is alive
-				if( c[1] < datetime.now()):
-					cookies.remove(c)
-		return False
-
-	#Store cookie in server when a correct login is perform.
-	def store_cookie( self, cookie ):
-		global cookies
-		cookies.append(( cookie, datetime.now() + timedelta(0, int(cookie['cookietemp']['expires']))))
-
 	#Login validation.
 	def check_login( self, login, password ):
 		try:
@@ -157,7 +143,7 @@ class myHandler(BaseHTTPRequestHandler):
 		if self.path=="/configuration":
 			if "Cookie" in self.headers:
 				c = Cookie.SimpleCookie(self.headers["Cookie"])
-				if(self.check_cookie(c)):
+				if(cookie_storage.check_cookie(c)):
 					self.path = configuration_path
 				else:
 					self.path = "html/login.html"
@@ -219,7 +205,7 @@ class myHandler(BaseHTTPRequestHandler):
 				c['cookietemp']['expires'] = 1200
 				c['cookietemp']['path'] = "/"
 				c['cookietemp']['httponly'] = "true"
-				self.store_cookie(c)
+				cookie_storage.store_cookie(c)
 
 				self.send_response(200)
 				self.send_header('Content-type','text/html')
@@ -254,7 +240,7 @@ class myHandler(BaseHTTPRequestHandler):
 				c = Cookie.SimpleCookie(self.headers["Cookie"])
 				print "cookie recibida: " + c['cookietemp'].value
 				#Cookie validation
-				if(self.check_cookie(c)):
+				if(cookie_storage.check_cookie(c)):
 					#Data validation
 					if not re.match("^[0-9]+$", form["samples"].value):
 						self.send_response(402)
@@ -299,7 +285,7 @@ class myHandler(BaseHTTPRequestHandler):
 				c = Cookie.SimpleCookie(self.headers["Cookie"])
 				print "cookie recibida: " + c['cookietemp'].value
 				#Cookie validation
-				if(self.check_cookie(c)):
+				if(cookie_storage.check_cookie(c)):
 					global store_data
 					isDataCorrect = False
 
@@ -362,7 +348,7 @@ class myHandler(BaseHTTPRequestHandler):
 				c = Cookie.SimpleCookie(self.headers["Cookie"])
 				print "cookie recibida: " + c['cookietemp'].value
 				#Cookie validation
-				if(self.check_cookie(c)):
+				if(cookie_storage.check_cookie(c)):
 					#TODO eliminar datos de otros modos, overclock etc.
 					print "[Power mode normal Post]"
 					system("sudo pmnormal")
@@ -391,7 +377,7 @@ class myHandler(BaseHTTPRequestHandler):
 				c = Cookie.SimpleCookie(self.headers["Cookie"])
 				print "cookie recibida: " + c['cookietemp'].value
 				#Cookie validation
-				if(self.check_cookie(c)):
+				if(cookie_storage.check_cookie(c)):
 					#TODO pmnormal.sh -> wifi activado, con underclock, eliminar datos que generen los otros modos etc
 					print "[Power mode 1 Post]"
 					system("sudo pm1")
