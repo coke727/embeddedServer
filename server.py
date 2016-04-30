@@ -22,6 +22,7 @@ from os import listdir
 from os.path import isfile, join
 
 PORT_NUMBER = 80
+configuration_path = "./html/configuration.html"
 samples_show = 20
 scp_adress = ""
 scp_frequency = 0
@@ -157,9 +158,9 @@ class myHandler(BaseHTTPRequestHandler):
 			if "Cookie" in self.headers:
 				c = Cookie.SimpleCookie(self.headers["Cookie"])
 				if(self.check_cookie(c)):
-					self.path="html/configuration.html"
+					self.path = configuration_path
 				else:
-					self.path="html/login.html"
+					self.path = "html/login.html"
 			else:
 				self.path="html/login.html"
 		if self.path=="/login":
@@ -195,6 +196,7 @@ class myHandler(BaseHTTPRequestHandler):
 			self.send_error(404,'File Not Found: %s' % self.path)
 
 	def do_POST(self):
+		global configuration_path
 
 		if(self.path == '/login'):
 			print "[Login Post]"
@@ -215,7 +217,7 @@ class myHandler(BaseHTTPRequestHandler):
 				c['cookietemp'] = str(hash_object.hexdigest())
 				c['cookietemp']['domain'] = "localhost"
 				c['cookietemp']['expires'] = 1200
-				c['cookietemp']['path'] = "/configuration"
+				c['cookietemp']['path'] = "/"
 				c['cookietemp']['httponly'] = "true"
 				self.store_cookie(c)
 
@@ -261,7 +263,6 @@ class myHandler(BaseHTTPRequestHandler):
 						self.send_response(402)
 						self.end_headers()
 					else:
-						#TODO Change frequency function when sensor is installed
 						if( self.isInt( form["samples"].value ) and int( form["samples"].value ) > 0 ):
 							samples_show = int(form["samples"].value)
 						else:
@@ -274,10 +275,10 @@ class myHandler(BaseHTTPRequestHandler):
 							isDataCorrect = False
 
 						if( isDataCorrect ):
-							f = open(curdir + sep + "html/configuration-conf.html")
+							f = open(curdir + sep + "html/configuration-changed.html")
 							self.send_response(200)
 						else:
-							f = open(curdir + sep + "html/configuration-conf-fail.html")
+							f = open(curdir + sep + "html/configuration-fail.html")
 							self.send_response(402)
 
 						self.send_header('Content-type','text/html')
@@ -293,91 +294,130 @@ class myHandler(BaseHTTPRequestHandler):
 
 
 		if(self.path == '/scp'):
-			global store_data
-			isDataCorrect = False
+			#Session check
+			if "Cookie" in self.headers:
+				c = Cookie.SimpleCookie(self.headers["Cookie"])
+				print "cookie recibida: " + c['cookietemp'].value
+				#Cookie validation
+				if(self.check_cookie(c)):
+					global store_data
+					isDataCorrect = False
 
-			print "[SCP Post]"
-			form = cgi.FieldStorage(
-				fp=self.rfile,
-				headers=self.headers,
-				environ={'REQUEST_METHOD':'POST',
-						'CONTENT_TYPE':self.headers['Content-Type'],
-						})
+					print "[SCP Post]"
+					form = cgi.FieldStorage(
+						fp=self.rfile,
+						headers=self.headers,
+						environ={'REQUEST_METHOD':'POST',
+								'CONTENT_TYPE':self.headers['Content-Type'],
+								})
 
-			if 'check' in form:
-				store_data = True
+					if 'check' in form:
+						store_data = True
+					else:
+						store_data = False
+
+					#Data validation
+					if self.isInt(form["scpfrequency"].value) and self.isInt(form["port"].value) and form["scp"].value and form["user"].value and form["directory"].value and form["password"].value:
+						isDataCorrect = True
+
+					#Store data if user wants.
+					if store_data:
+						with file("./scp.txt",'w+') as scpfile:
+							scpfile.write(form["user"].value+"\n")
+							scpfile.write(form["scp"].value+"\n")
+							scpfile.write(form["directory"].value+"\n")
+							scpfile.write(form["port"].value+"\n")
+							scpfile.write(form["password"].value+"\n")
+							scpfile.write(form["scpfrequency"].value+"\n")
+						scpfile.close()
+
+					#Create scp task.
+					#TODO encriptar datos que se pasan al script (?)
+					p = subprocess.Popen(["python", "scpdaemon.py", "restart", form["scpfrequency"].value, form["scp"].value, form["user"].value, form["port"].value, form["directory"].value], stdin=PIPE, stdout=PIPE)
+					print p.communicate(form["password"].value)
+					#TODO check that is correct, subprocess.check~
+
+					#Redirect to configuration.
+					if( isDataCorrect ):
+						f = open(curdir + sep + "html/configuration-changed.html") 
+						self.send_response(200)
+					else:
+						f = open(curdir + sep + "html/configuration-fail.html") 
+						self.send_response(402)
+
+					self.send_header('Content-type','text/html')
+					self.end_headers()
+					self.wfile.write(f.read())
+					f.close()
+				else:
+					self.send_response(403)
+					self.end_headers()
 			else:
-				store_data = False
-
-			#Data validation
-			if self.isInt(form["scpfrequency"].value) and self.isInt(form["port"].value) and form["scp"].value and form["user"].value and form["directory"].value and form["password"].value:
-				isDataCorrect = True
-
-			#Store data if user wants.
-			if store_data:
-				with file("./scp.txt",'w+') as scpfile:
-					scpfile.write(form["user"].value+"\n")
-					scpfile.write(form["scp"].value+"\n")
-					scpfile.write(form["directory"].value+"\n")
-					scpfile.write(form["port"].value+"\n")
-					scpfile.write(form["password"].value+"\n")
-					scpfile.write(form["scpfrequency"].value+"\n")
-				scpfile.close()
-
-			#Create scp task.
-			#TODO encriptar datos que se pasan al script (?)
-			p = subprocess.Popen(["python", "scpdaemon.py", "restart", form["scpfrequency"].value, form["scp"].value, form["user"].value, form["port"].value, form["directory"].value], stdin=PIPE, stdout=PIPE)
-			print p.communicate(form["password"].value)
-			#TODO check that is correct, subprocess.check~
-
-			#Redirect to configuration.
-			if( isDataCorrect ):
-				f = open(curdir + sep + "html/configuration-scp.html") 
-				self.send_response(200)
-			else:
-				f = open(curdir + sep + "html/configuration-scp-fail.html") 
-				self.send_response(402)
-
-			self.send_header('Content-type','text/html')
-			self.end_headers()
-			self.wfile.write(f.read())
-			f.close()
+				self.send_response(403)
+				self.end_headers()
 
 		if(self.path == '/pmnormal'):
-			#TODO eliminar datos de otros modos, overclock etc.
-			print "[Power mode normal Post]"
-			system("sudo pmnormal")
+			#Session check
+			if "Cookie" in self.headers:
+				c = Cookie.SimpleCookie(self.headers["Cookie"])
+				print "cookie recibida: " + c['cookietemp'].value
+				#Cookie validation
+				if(self.check_cookie(c)):
+					#TODO eliminar datos de otros modos, overclock etc.
+					print "[Power mode normal Post]"
+					system("sudo pmnormal")
+					configuration_path = './html/configuration_mode0.html'
 
-			cron = CronTab(user='coke')
-			cron.remove_all()
-			cron.write_to_user( user=True )
-			
-			f = open(curdir + sep + "html/configuration.html") 
-			self.send_response(200)
-			self.send_header('Content-type','text/html')
-			self.end_headers()
-			self.wfile.write(f.read())
-			f.close()
+					cron = CronTab(user='coke')
+					cron.remove_all()
+					cron.write_to_user( user=True )
+
+					f = open(curdir + sep + "html/configuration-changed.html") 
+					self.send_response(200)
+					self.send_header('Content-type','text/html')
+					self.end_headers()
+					self.wfile.write(f.read())
+					f.close()
+				else:
+					self.send_response(403)
+					self.end_headers()
+			else:
+				self.send_response(403)
+				self.end_headers()
 			
 		if(self.path == '/pm1'):
-			#TODO pmnormal.sh -> wifi activado, con underclock, eliminar datos que generen los otros modos etc
-			print "[Power mode 1 Post]"
-			system("sudo pm1")
-			
-			cron = CronTab(user='coke')
-			cron.remove_all()
-			cron.write_to_user( user=True )
+			#Session check
+			if "Cookie" in self.headers:
+				c = Cookie.SimpleCookie(self.headers["Cookie"])
+				print "cookie recibida: " + c['cookietemp'].value
+				#Cookie validation
+				if(self.check_cookie(c)):
+					#TODO pmnormal.sh -> wifi activado, con underclock, eliminar datos que generen los otros modos etc
+					print "[Power mode 1 Post]"
+					system("sudo pm1")
+					configuration_path = './html/configuration_mode1.html'
+					
+					cron = CronTab(user='coke')
+					cron.remove_all()
+					cron.write_to_user( user=True )
 
-			f = open(curdir + sep + "html/configuration.html") 
-			self.send_response(200)
-			self.send_header('Content-type','text/html')
-			self.end_headers()
-			self.wfile.write(f.read())
-			f.close()
+					f = open(curdir + sep + "html/configuration-changed.html")
+					self.send_response(200)
+					self.send_header('Content-type','text/html')
+					self.end_headers()
+					self.wfile.write(f.read())
+					f.close()
+				else:
+					self.send_response(403)
+					self.end_headers()
+			else:
+				self.send_response(403)
+				self.end_headers()
 		if(self.path == '/pm2_multiple'):
+			configuration_path = './html/configuration_mode2.html'
 			#TODO elimnar datos de los otros modos
 			print "[Power mode 2 Post: Multiple intervals]"
-
+			
 			#Post form recover
 			form = cgi.FieldStorage(
 				fp=self.rfile,
@@ -419,13 +459,14 @@ class myHandler(BaseHTTPRequestHandler):
 			cron.write( './crons/mp2.tab' )
 			cron.write_to_user( user=True )
 
-			f = open(curdir + sep + "html/configuration.html") 
+			f = open(curdir + sep + "html/configuration-changed.html")
 			self.send_response(200)
 			self.send_header('Content-type','text/html')
 			self.end_headers()
 			self.wfile.write(f.read())
 			f.close()
 		if(self.path == '/pm2_one'):
+			configuration_path = './html/configuration_mode2.html'
 			print "[Power mode 2 Post: One interval]"
 
 			#Post form recover
@@ -458,7 +499,7 @@ class myHandler(BaseHTTPRequestHandler):
 			cron.write( './crons/mp2.tab' )
 			cron.write_to_user( user=True )
 
-			f = open(curdir + sep + "html/configuration.html") 
+			f = open(curdir + sep + "html/configuration-changed.html") 
 			self.send_response(200)
 			self.send_header('Content-type','text/html')
 			self.end_headers()
@@ -466,6 +507,7 @@ class myHandler(BaseHTTPRequestHandler):
 			f.close()
 
 		if(self.path == '/pm2_eachday'):
+			configuration_path = './html/configuration_mode2.html'
 			print "[Power mode 2 Post: Multiple intervals]"
 
 			#Post form recover
@@ -505,13 +547,14 @@ class myHandler(BaseHTTPRequestHandler):
 			cron.write( './crons/mp2.tab' )
 			cron.write_to_user( user=True )
 
-			f = open(curdir + sep + "html/configuration.html") 
+			f = open(curdir + sep + "html/configuration-changed.html") 
 			self.send_response(200)
 			self.send_header('Content-type','text/html')
 			self.end_headers()
 			self.wfile.write(f.read())
 			f.close()
 		if(self.path == '/pm3'):
+			configuration_path = './html/configuration_mode3.html'
 			print "[Power mode 3 Post]"
 			#TODO modo 3 -> pmsleep.sh -> depender del RTC para encender raspi antes de cada medida o en la fecha pedida por el usuario
 			#hay que eliminar los datos generados por los otros modos y generar los datos necesarios.

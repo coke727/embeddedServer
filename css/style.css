@@ -142,6 +142,7 @@ h2 {
 	display: none;
 	border: 1px solid gray;
 	padding: 20px;
+	background-color: white;
 }
 .accordion-content.default {
 	display: block;
@@ -158,4 +159,23 @@ h2 {
 
 .accordion h4 span{
 	float: right;
+}
+
+.powermode.selected {
+	background-color: #C4D14F;
+}
+
+.msgrectangle {
+	padding: 20px;
+	padding-bottom: 40px;
+	width: 50%;
+	border: 1px solid gray;
+}
+
+.msgrectangle.ok {
+	background-color: #4CAF50;
+}
+
+.msgrectangle.fail {
+	background-color: #EB6380;
 }
