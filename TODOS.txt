@@ -5,7 +5,7 @@ WEB & SYS:
 ----------
 1º   RB  ---- SSL conection (In RBPI2)
 2º  DONE ---- Create scp daemon from server post method, se le pasan args como user, host etc... y pide por raw input la contraseña
-3º       ---- Backup daemon/crontab --> integrar con scp o por separado || lo primero es bloqueante
+3º  DONE ---- Backup daemon/crontab --> integrar con scp o por separado || lo primero es bloqueante
 4º  DONE ---- Check data in server and client (+- done)
 5º  DONE ---- conectar post de frecuencia de mediciones con sensor (In PBPI2)
 6º  DONE ---- Refactor
@@ -23,7 +23,7 @@ DETALLES:
 4º  ~~~~ ---- el post a configuracion se hace validando con 0 como valor minimo, mirar si subir ese minimo o si poner máximo.
 5º  DONE ---- comprobar que la conexion scp se realizo correctamente.
 6º       ---- cntl+c cerrar hacer popen con daemon stop para que se pare tambien (pensar antes si esto seria correcto).
-7º       ---- si el scp casca enviar todos los archivos que no se enviaron // comprobar si el daemon sigue si el scp ha cascado.
+7º  DONE ---- si el scp casca enviar todos los archivos que no se enviaron // comprobar si el daemon sigue si el scp ha cascado.
 8º  ~~~~ ---- Preguntar al usuario si esta seguro en los formularios cuando los valores sean ridiculos pero posibles, diciendo que la            bateria se acabara antes etc.
 9º  DONE ---- Implementar autenticacion. Almacenando user y contraseña en dispositivo.
 10º DONE ---- Pantalla de fallo en el login.
@@ -42,7 +42,7 @@ DETALLES:
 23º DONE ---- al salir de los intervalos del modo 2 o 3 pasar a modo normal o 1
 24º ~~~~ ---- mostrar la configuracion actual en la web.
 25º DONE ---- acordeon con tres modos de introducir el calendario, todos los dias igual, dia a dia un intervalo y modo experto con dia a dia varios intervalos.
-26º      ---- validar calendarios en front end.
+26º DONE ---- validar calendarios en front end.
 27º DONE ---- guardear los post a scp con sesion
 28º DONE ---- guardear modos de energia con sesion
 29º DONE ---- sacar a funcion comprobacion de cookie

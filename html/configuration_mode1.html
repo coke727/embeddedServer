@@ -21,12 +21,15 @@
 				Frequency is the time between each sample taken by the temperature sensor. The default frequency is 10 minutes.
 			</p>
 			<form method="post" action="http://localhost/configuration">
-				<p><input type="number" name="frequency" value="" placeholder="Frequency in minutes" min="1"></p>
-
+				<p><input type="number" name="frequency" value="" placeholder="Frequency in minutes" min="1" required="required" title="Input for sensor frequency."></p>
 			<p>
-				The number of samples is the amount of samples in the data files stored in the device. The web page only displays the last file created. The default number of samples si 120.
+				The number of samples is the amount of samples in the data files stored in the device. The default number of samples is 120.
 			</p>
-				<p><input type="number" name="samples" value="" placeholder="samples number" min="1"></p>
+				<p><input type="number" name="samples" value="" placeholder="number of samples in each file" min="1" required="required" title="Input for number of samples in each file."></p>
+			<p>
+				The number of samples shown in the web page. The default number of samples shown is 20.
+			</p>
+				<p><input type="number" name="websamples" value="" placeholder="samples number shown in the webpage" min="1" required="required" title="Input for number of samples shown in configuration."></p>
 				<p class="submit"><input type="submit" name="commit" value="Submit"></p>
 			</form>
 		</div>
@@ -39,12 +42,12 @@
 				If you want to use this functionallity using also the power saving mode 3 you must accept to store this data	the device checking the checkbox below else the scp will be desactivated when the device turn to power mode 3. 
 			</p>
 			<form method="post" action="http://localhost/scp">
-				<p><input type="text" name="scp" value="" placeholder="scp direction"></p>
-				<p><input type="text" name="user" value="" placeholder="scp user"></p>
-				<p><input type="password" name="password" value="" placeholder="scp password"></p>
-				<p><input type="number" name="port" value="" placeholder="scp port" min="1"></p>
-				<p><input type="text" name="directory" value="" placeholder="directory to store samples in the tarjet scp address"></p>
-				<p><input type="number" name="scpfrequency" value="" placeholder="scp frequency in Hours" min="1"></p>
+				<p><input type="text" name="scp" value="" placeholder="scp direction" required="required" title="scp destinatary address"></p>
+				<p><input type="text" name="user" value="" placeholder="scp user" required="required" title="scp user"></p>
+				<p><input type="password" name="password" value="" placeholder="scp password" required="required" title="scp password"></p>
+				<p><input type="number" name="port" value="" placeholder="scp port" min="1" required="required" title="scp port"></p>
+				<p><input type="text" name="directory" value="" placeholder="directory to store samples in the tarjet scp address" required="required" title="directory where store samples"></p>
+				<p><input type="number" name="scpfrequency" value="" placeholder="scp frequency in Hours" min="1" required="required" title="scp frequency"></p>
 				<p class="submit"><input type="submit" name="commit" value="Submit"></p>
 				<input type="checkbox" name="check" value="store"><label for="check">I accept store my data</label>
 			</form>
@@ -78,20 +81,21 @@
 					<div class="accordion-content default">
 						<p>Set the start and end hour for the mode 2 in each days of the week. The interval must have a duration of 23 hours as maximun.</p>
 						<form method="post" action="http://localhost/pm2_one">
-							<div class="timetable">Start: <input type="number" min="0" max="23" name="start" value="" placeholder="Start hour"></div>
-							<div class="timetable">End: <input type="number" min="0" max="23" name="end" value="" placeholder="End hour"></div>	<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
+							<div class="timetable">Start: <input type="number" min="0" max="23" name="start" value="" placeholder="Start hour" required="required" title="start hour every day"></div>
+							<div class="timetable">End: <input type="number" min="0" max="23" name="end" value="" placeholder="End hour" required="required" title="end hour every day"></div>	
+							<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
 						</form>
 					</div>
 					<h4 class="accordion-toggle">One diferent interval each week day <span>+</span></h4>
 					<div class="accordion-content">
 						<form method="post" action="http://localhost/pm2_eachday">
-							<div class="timetable">Monday: <input type="text" name="monday_start" value="" placeholder="Start hour"><input type="text" name="monday_end" value="" placeholder="End hour"></div>
-							<div class="timetable">Tuesday: <input type="text" name="tuesday_start" value="" placeholder="Start hour"><input type="text" name="tuesday_end" value="" placeholder="End hour"></div>
-							<div class="timetable">Wednesday: <input type="text" name="wednesday_start" value="" placeholder="Start hour"><input type="text" name="wednesday_end" value="" placeholder="End hour"></div>
-							<div class="timetable">Thursday: <input type="text" name="thursday_start" value="" placeholder="Start hour"><input type="text" name="thursday_end" value="" placeholder="End hour"></div>
-							<div class="timetable">Friday: <input type="text" name="friday_start" value="" placeholder="Start hour"><input type="text" name="friday_end" value="" placeholder="End hour"></div>
-							<div class="timetable">Saturday: <input type="text" name="saturday_start" value="" placeholder="Start hour"><input type="text" name="saturday_end" value="" placeholder="End hour"></div>
-							<div class="timetable">Sunday: <input type="text" name="sunday_start" value="" placeholder="Start hour"><input type="text" name="sunday_end" value="" placeholder="End hour"></div>
+							<div class="timetable">Monday: <input type="text" name="monday_start" value="" placeholder="Start hour" required="required" title="monday start hour"><input type="text" name="monday_end" value="" placeholder="End hour" required="required" title="monday end hour"></div>
+							<div class="timetable">Tuesday: <input type="text" name="tuesday_start" value="" placeholder="Start hour" required="required" title="tuesday start hour"><input type="text" name="tuesday_end" value="" placeholder="End hour" required="required" title="tuesday end hour"></div>
+							<div class="timetable">Wednesday: <input type="text" name="wednesday_start" value="" placeholder="Start hour" required="required" title="wednesday start hour"><input type="text" name="wednesday_end" value="" placeholder="End hour" required="required" title="wednesday end hour"></div>
+							<div class="timetable">Thursday: <input type="text" name="thursday_start" value="" placeholder="Start hour" required="required" title="Thursday start hour"><input type="text" name="thursday_end" value="" placeholder="End hour" required="required" title="thursday end hour"></div>
+							<div class="timetable">Friday: <input type="text" name="friday_start" value="" placeholder="Start hour" required="required" title="friday start hour"><input type="text" name="friday_end" value="" placeholder="End hour" required="required" title="friday end hour"></div>
+							<div class="timetable">Saturday: <input type="text" name="saturday_start" value="" placeholder="Start hour" required="required" title="saturday start hour"><input type="text" name="saturday_end" value="" placeholder="End hour" required="required" title="saturdar end hour"></div>
+							<div class="timetable">Sunday: <input type="text" name="sunday_start" value="" placeholder="Start hour" required="required" title="sunday start hour"><input type="text" name="sunday_end" value="" placeholder="End hour" required="required" title="sunday end hour"></div>
 							<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
 						</form>
 					</div>
@@ -104,13 +108,13 @@
 							The intervals must be separated by comas and following the sintaxis: (init hour, finish hour)
 						</p>
 						<form method="post" action="http://localhost/pm2_multiple">
-							<div class="timetable">Monday: <input type="text" name="monday" value="" placeholder="Time intervals"></div>
-							<div class="timetable">Tuesday: <input type="text" name="tuesday" value="" placeholder="Time intervals"></div>
-							<div class="timetable">Wednesday: <input type="text" name="wednesday" value="" placeholder="Time intervals"></div>
-							<div class="timetable">Thursday: <input type="text" name="thursday" value="" placeholder="Time intervals"></div>
-							<div class="timetable">Friday: <input type="text" name="friday" value="" placeholder="Time intervals"></div>
-							<div class="timetable">Saturday: <input type="text" name="saturday" value="" placeholder="Time intervals"></div>
-							<div class="timetable">Sunday: <input type="text" name="sunday" value="" placeholder="Time intervals"></div>
+							<div class="timetable">Monday: <input type="text" name="monday" value="" placeholder="Time intervals" required="required" title="Time intervals for monday" pattern="(\(\d+,\d+\),)*\(\d+,\d+\)"></div>
+							<div class="timetable">Tuesday: <input type="text" name="tuesday" value="" placeholder="Time intervals" required="required" title="Time intervals for tuesday" pattern="(\(\d+,\d+\),)*\(\d+,\d+\)"></div>
+							<div class="timetable">Wednesday: <input type="text" name="wednesday" value="" placeholder="Time intervals" required="required" title="Time intervals for wednesday" pattern="(\(\d+,\d+\),)*\(\d+,\d+\)"></div>
+							<div class="timetable">Thursday: <input type="text" name="thursday" value="" placeholder="Time intervals" required="required" title="Time intervals for thursday" pattern="(\(\d+,\d+\),)*\(\d+,\d+\)"></div>
+							<div class="timetable">Friday: <input type="text" name="friday" value="" placeholder="Time intervals" required="required" title="Time intervals for friday" pattern="(\(\d+,\d+\),)*\(\d+,\d+\)"></div>
+							<div class="timetable">Saturday: <input type="text" name="saturday" value="" placeholder="Time intervals" required="required" title="Time intervals for saturday" pattern="(\(\d+,\d+\),)*\(\d+,\d+\)"></div>
+							<div class="timetable">Sunday: <input type="text" name="sunday" value="" placeholder="Time intervals" required="required" title="Time intervals for sunday" pattern="(\(\d+,\d+\),)*\(\d+,\d+\)"></div>
 							<p class="submit"><input type="submit" name="commit" value="Switch to mode 2"></p>
 						</form>
 					</div>

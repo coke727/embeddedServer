@@ -4,7 +4,13 @@ crons
 *.pyc
 power_saving_notes.txt
 data/*.txt
-data/backups/*
+data/backup/*
 config/*
 logs/*
 crons/*
+sendedFiles.txt
+.yapdi.pid
+a.out
+rtc.c
+scp.txt
+
