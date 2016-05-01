@@ -5,6 +5,9 @@ from crontabs import CronTabs
 
 crontab_user = 'coke'
 week_keys = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+week_starts = ['monday_start', 'tuesday_start', 'wednesday_start', 'thursday_start', 'friday_start', 'saturday_start', 'sunday_start']
+week_ends = ['monday_end', 'tuesday_end', 'wednesday_end', 'thursday_end', 'friday_end', 'saturday_end', 'sunday_end']
+week_days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 
 # Simplify the intervals array returning a new array simplified.
 def remove_overlap( intervals ): #sol by http://www.geeksforgeeks.org/merging-intervals/
@@ -51,6 +54,49 @@ def getConfiguration(config_name):
 		return value
 	except:
 		return value
+
+def validateInterval(string_start, string_end):
+	if(isInt(string_start) and isInt(string_end)):
+		start = int(form["start"].value)
+		end = int(form["end"].value)
+		if start < end and  start > 0 and end < 24 and (start-end) < 23:
+			return True
+		else:
+			return False
+	else:
+		return False
+
+def validateInterval_eachDay(form):
+	week_index = 0
+	valid = True
+	while week_index < 7:
+		if(not validateInterval(form[week_starts[week_index]].value, form[week_ends[week_index]].value)):
+			valid = False
+		week_index += 1
+	return valid
+
+def validateInterval_multiple(form):
+	regex = re.compile("(\(\d+,\d+\),)*\(\d+,\d+\)")
+	week_index = 0
+	valid = True
+	while week_index < 7:
+		if (not regex.match(form[week_days[week_index]].value)):
+			print "false regex.match"
+			valid = False
+			break
+		intervals = remove_overlap(getIntervalArray(form[week_days[week_index]].value))
+		total_hours = 0
+		for interval in intervals:
+			total_hours += (interval[1] - interval[0])
+			if interval[0] < 0 or interval[1] > 23:
+				valid = False
+				break 
+		if total_hours >= 23:
+			print "> 24h"
+			valid = False
+			break
+		week_index += 1
+	return valid
 
 # --------------- #
 # Login Functions #

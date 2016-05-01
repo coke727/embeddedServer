@@ -272,10 +272,12 @@ class myHandler(BaseHTTPRequestHandler):
 					environ={'REQUEST_METHOD':'POST',
 							'CONTENT_TYPE':self.headers['Content-Type'],
 							})
-
-				utils.create_crontab(form, True)
-				self.setConfiguration("powermode.txt", "2")
-				self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
+				if(utils.validateInterval_multiple(form)):
+					utils.create_crontab(form, True)
+					self.setConfiguration("powermode.txt", "2")
+					self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
+				else:
+					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
 			else:
 				self.answerPost(curdir + sep + "html/session-fail.html", 200)
 
@@ -292,11 +294,14 @@ class myHandler(BaseHTTPRequestHandler):
 							'CONTENT_TYPE':self.headers['Content-Type'],
 							})
 
-				monday = tuesday = wednesday = thursday = friday = saturday = sunday = (int(form["start"].value),int(form["end"].value))
-
-				utils.write_crontab([monday, tuesday, wednesday, thursday, friday, saturday, sunday], False)
-				self.setConfiguration("powermode.txt", "2")
-				self.answerPost(curdir + sep + "html/configuration-changed.html",200)
+				#validation
+				if(utils.validateInterval(form["start"].value, form["end"].value)):
+					monday = tuesday = wednesday = thursday = friday = saturday = sunday = (int(form["start"].value),int(form["end"].value))
+					utils.write_crontab([monday, tuesday, wednesday, thursday, friday, saturday, sunday], False)
+					self.setConfiguration("powermode.txt", "2")
+					self.answerPost(curdir + sep + "html/configuration-changed.html",200)
+				else:
+					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
 			else:
 				self.answerPost(curdir + sep + "html/session-fail.html", 200)
 
@@ -313,9 +318,12 @@ class myHandler(BaseHTTPRequestHandler):
 							'CONTENT_TYPE':self.headers['Content-Type'],
 							})
 
-				utils.create_crontab(form, False)
-				self.setConfiguration("powermode.txt", "2")
-				self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
+				if(utils.validateInterval_eachDay(form)):
+					utils.create_crontab(form, False)
+					self.setConfiguration("powermode.txt", "2")
+					self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
+				else:
+					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
 			else:
 				self.answerPost(curdir + sep + "html/session-fail.html", 200)
 
