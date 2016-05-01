@@ -3,4 +3,7 @@ html/web.html
 crons
 *.pyc
 power_saving_notes.txt
-data
+data/*.txt
+data/backups/*
+config/*
+logs/*
