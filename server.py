@@ -23,6 +23,7 @@ import utils
 PORT_NUMBER = 80
 configuration_path = "./html/configuration.html"
 samples_show = 20
+samples_file = 120
 scp_adress = ""
 scp_frequency = 0
 store_data = False
@@ -51,6 +52,11 @@ class myHandler(BaseHTTPRequestHandler):
 		self.end_headers()
 		self.wfile.write(f.read())
 		f.close()
+
+	def setConfiguration(self, file, value):		
+		with open("./config/"+file, 'w+') as file:
+			file.write(str(value))
+		file.close()
 
 	#Handler for the GET requests
 	def do_GET(self):
@@ -132,6 +138,7 @@ class myHandler(BaseHTTPRequestHandler):
 
 		if(self.path == '/configuration'):
 			global samples_show
+			global samples_file
 			global frequency
 			isDataCorrect = True
 
@@ -150,15 +157,25 @@ class myHandler(BaseHTTPRequestHandler):
 					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
 				elif not re.match("^[0-9]+$", form["frequency"].value):
 					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+				elif not re.match("^[0-9]+$", form["websamples"].value):
+					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
 				else:
+					if( utils.isInt( form["websamples"].value ) and int( form["websamples"].value ) > 0 ):
+						samples_show = int(form["websamples"].value)
+						self.setConfiguration("samples_show.txt" , samples_show)
+					else:
+						isDataCorrect = False
+
 					if( utils.isInt( form["samples"].value ) and int( form["samples"].value ) > 0 ):
-						samples_show = int(form["samples"].value)
+						samples_file = int(form["samples"].value)
+						self.setConfiguration("file_size.txt" , samples_file)
 					else:
 						isDataCorrect = False
 
 					if( utils.isInt( form["frequency"].value ) and int( form["frequency"].value ) > 0 ):
 						frequency = int(form["frequency"].value)
-						system("python tempdaemon.py restart " + str(frequency))
+						self.setConfiguration("frequency_temp.txt" , frequency)
+						system("python tempdaemon.py start")
 					else:
 						isDataCorrect = False
 
@@ -193,9 +210,11 @@ class myHandler(BaseHTTPRequestHandler):
 				if utils.isInt(form["scpfrequency"].value) and utils.isInt(form["port"].value) and form["scp"].value and form["user"].value and form["directory"].value and form["password"].value:
 					isDataCorrect = True
 
+				self.setConfiguration("frequency_scp.txt", form["scpfrequency"].value)
+
 				#Store data if user wants.
 				if store_data:
-					with file("./scp.txt",'w+') as scpfile:
+					with file("./config/scp.txt",'w+') as scpfile:
 						scpfile.write(form["user"].value+"\n")
 						scpfile.write(form["scp"].value+"\n")
 						scpfile.write(form["directory"].value+"\n")
@@ -206,7 +225,7 @@ class myHandler(BaseHTTPRequestHandler):
 
 				#Create scp task.
 				#TODO encriptar datos que se pasan al script (?)
-				p = subprocess.Popen(["python", "scpdaemon.py", "restart", form["scpfrequency"].value, form["scp"].value, form["user"].value, form["port"].value, form["directory"].value], stdin=PIPE, stdout=PIPE)
+				p = subprocess.Popen(["python", "scpdaemon.py", "restart", form["scp"].value, form["user"].value, form["port"].value, form["directory"].value], stdin=PIPE, stdout=PIPE)
 				print p.communicate(form["password"].value)
 				#TODO check that is correct, subprocess.check~
 
@@ -224,6 +243,7 @@ class myHandler(BaseHTTPRequestHandler):
 				#TODO eliminar datos de otros modos, overclock etc.
 				print "[Power mode normal Post]"
 				self.setPowerSavingModeNormal()
+				self.setConfiguration("powermode.txt", "0")
 				self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
 			else:
 				self.answerPost(curdir + sep + "html/session-fail.html", 200)
@@ -234,6 +254,7 @@ class myHandler(BaseHTTPRequestHandler):
 				#TODO pmnormal.sh -> wifi activado, con underclock, eliminar datos que generen los otros modos etc
 				print "[Power mode 1 Post]"
 				self.setPowerSavingMode1()
+				self.setConfiguration("powermode.txt", "1")
 				self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
 			else:
 				self.answerPost(curdir + sep + "html/session-fail.html", 200)
@@ -253,6 +274,7 @@ class myHandler(BaseHTTPRequestHandler):
 							})
 
 				utils.create_crontab(form, True)
+				self.setConfiguration("powermode.txt", "2")
 				self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
 			else:
 				self.answerPost(curdir + sep + "html/session-fail.html", 200)
@@ -273,6 +295,7 @@ class myHandler(BaseHTTPRequestHandler):
 				monday = tuesday = wednesday = thursday = friday = saturday = sunday = (int(form["start"].value),int(form["end"].value))
 
 				utils.write_crontab([monday, tuesday, wednesday, thursday, friday, saturday, sunday], False)
+				self.setConfiguration("powermode.txt", "2")
 				self.answerPost(curdir + sep + "html/configuration-changed.html",200)
 			else:
 				self.answerPost(curdir + sep + "html/session-fail.html", 200)
@@ -291,6 +314,7 @@ class myHandler(BaseHTTPRequestHandler):
 							})
 
 				utils.create_crontab(form, False)
+				self.setConfiguration("powermode.txt", "2")
 				self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
 			else:
 				self.answerPost(curdir + sep + "html/session-fail.html", 200)
@@ -298,6 +322,7 @@ class myHandler(BaseHTTPRequestHandler):
 		if(self.path == '/pm3'):
 			configuration_path = './html/configuration_mode3.html'
 			print "[Power mode 3 Post]"
+			self.setConfiguration("powermode.txt", "3")
 			#TODO modo 3 -> pmsleep.sh -> depender del RTC para encender raspi antes de cada medida o en la fecha pedida por el usuario
 			#hay que eliminar los datos generados por los otros modos y generar los datos necesarios.
 try:

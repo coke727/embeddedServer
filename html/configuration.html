@@ -22,11 +22,14 @@
 			</p>
 			<form method="post" action="http://localhost/configuration">
 				<p><input type="number" name="frequency" value="" placeholder="Frequency in minutes" min="1"></p>
-
 			<p>
-				The number of samples is the amount of samples in the data files stored in the device. The web page only displays the last file created. The default number of samples si 120.
+				The number of samples is the amount of samples in the data files stored in the device. The default number of samples is 120.
 			</p>
-				<p><input type="number" name="samples" value="" placeholder="samples number" min="1"></p>
+				<p><input type="number" name="samples" value="" placeholder="number of samples in each file" min="1"></p>
+			<p>
+				The number of samples shown in the web page. The default number of samples shown is 20.
+			</p>
+				<p><input type="number" name="websamples" value="" placeholder="samples number shown in the webpage" min="1"></p>
 				<p class="submit"><input type="submit" name="commit" value="Submit"></p>
 			</form>
 		</div>

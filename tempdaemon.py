@@ -9,6 +9,7 @@ import time
 import yapdi
 from os import listdir
 from os.path import isfile, join
+import utils
 
 os.system("modprobe w1-gpio")
 os.system("modprobe w1-therm")
@@ -45,8 +46,9 @@ def read_temp():
 def get_arguments():
 	global frequency
 	global number_samples
-	frequency = int(sys.argv[2])
-	number_samples = int(sys.argv[3])
+
+	frequency = int(utils.getConfiguration("frequency_temp.txt"))
+	number_samples = int(utils.getConfiguration("file_size.txt"))
 
 def usage():
 	print("USAGE: python %s %s|%s|%s" % (sys.argv[0], COMMAND_START, COMMAND_STOP, COMMAND_RESTART))
@@ -73,6 +75,7 @@ def get_data_file():
 
 
 def count():
+	get_arguments()
 	file_data = get_data_file()
 	samples_in_file = file_data[1]
 	file_path = file_data[0]
@@ -90,7 +93,6 @@ def count():
 		time.sleep(frequency)
 
 if sys.argv[1] == COMMAND_START:
-	get_arguments()
 	daemon = yapdi.Daemon()
 
 	# Check whether an instance is already running
@@ -117,7 +119,6 @@ elif sys.argv[1] == COMMAND_STOP:
 		print('Trying to stop running instance failed')
 
 elif sys.argv[1] == COMMAND_RESTART:
-	get_arguments()
 	daemon = yapdi.Daemon()
 	retcode = daemon.restart()
 

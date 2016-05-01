@@ -42,6 +42,16 @@ def isInt(s):
 	except ValueError:
 		return False
 
+def getConfiguration(config_name):
+	value = 0
+	try:
+		with open("./config/"+config_name, 'r') as file:
+			value = file.readline().strip()
+		file.close()
+		return value
+	except:
+		return value
+
 # --------------- #
 # Login Functions #
 # --------------- #
