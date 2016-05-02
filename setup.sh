@@ -3,9 +3,12 @@
 if [ -d "/sys/bus/w1/devices/28*" ]; then
 
 	#Download the repository with the code.
-	echo "Downloading weather station code from Github."
-	git clone https://github.com/coke727/embeddedServer.git
-	cd embeddedServer
+	if [ ! -d "./embeddedServer"]; then
+		echo "Downloading weather station code from Github."
+		git clone https://github.com/coke727/embeddedServer.git
+	else
+		echo "[Warning!] Weather station code already in this directory. I will use the code already in the device, if it is not desirable move the code from this directory and execute this script another time."
+		cd embeddedServer
 
 	#Wpa_supplicant setup
 	echo "Configuration eduroam network with wpa_supplicant."
@@ -15,7 +18,7 @@ if [ -d "/sys/bus/w1/devices/28*" ]; then
 
 	#Adding server execution to boot
 	if grep -q weatherStation.py "/etc/rc.local"; then
-		echo "The weather station is already in /etc/rc.local"
+		echo "[Warning!] The weather station is already in /etc/rc.local"
 	else
 		echo "Adding weather station to /etc/rc.local"
 		sudo head -n -1 /etc/rc.local > ./temp.txt 
@@ -30,11 +33,18 @@ if [ -d "/sys/bus/w1/devices/28*" ]; then
 	echo "Creating temporal data directories."
 	mkdir -p ./logs ./crons ./config ./data/backup
 
-	if [ ! -d ""]; then
-		echo "There isn't an RTC module installed. Please install the required hardware and restart this script. Otherwise the 3º power mode will be deactivated."
+	if [ ! -d "/sys/class/rtc/rtc0"]; then
+		echo " [Warning!] There isn't an RTC module installed. Please install the required hardware and restart this script. Otherwise the 3º power mode will be disable."
+		echo "Execute setup.sh after install the RTC module for enable 3º power mode." >> ./config/rtc_state
+	else
+		if [ -f "./config/rtc_state"]; then
+			rm ./config/rtc_state.txt
+		else
+			echo "RTC detectado correctamente."
+		fi
 	fi
 
 	sudo reboot
 else
-	echo "There is no temperature sensor installed in system. Please install the required hardware before continue."
+	echo "[Error!] There is no temperature sensor installed in system. Please install the required hardware before continue."
 fi
