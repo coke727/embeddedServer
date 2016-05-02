@@ -50,6 +50,35 @@ def set_domain(newip):
 	system('sudo echo "' +hostname+machine_number+ '" > /etc/hostname')
 	system('sudo echo -e "' newip+ '\t' +hostname+machine_number+domain +'\t'+ hostname+machine_number+'\n" >> /etc/hosts')
 
+def crontab_exist():
+	try:
+		with open("./crons/pm2.tab", 'r') as cron:
+			log("Using actual crontab.")
+		cron.close()
+		return True
+	except:
+		return False
+
+def isPowermode2_on():
+	with open("./crons/pm2.tab", 'r') as cron:
+		day_number = datetime.datetime.today().weekday()
+		i = 0
+		while (i <= day_number):
+			starts = cron.next()
+			i += 1
+		starts = starts.split('*')
+		starts = starts[1].strip()
+		starts = starts.split(',')
+	cron.close()
+	hour_now = datetime.datetime.today().hour
+
+	for h in starts:
+		if (h == hour_now):
+			return True
+
+	return False
+
+
 def powerMode_configuration():
 	powermode = 0
 
@@ -69,10 +98,23 @@ def powerMode_configuration():
 			#start server
 			system("sudo python server.py")
 		elif( powermode = 2):
-			#get crontab (si no existe pasar a 1) y ejecutarla.
-			#mirar en que intervalo estamos si dentro de 2 o fuera y actuar en funcion.
+			if(crontab_exist())
+				if(isPowermode2_on()):
+					system("sudo pm2")
+				else:
+					system("sudo pm1")
+			else:
+				log("Crontab doesn't exist. Changing to power mode 1.")
+				system("echo '1' > ./conf/powermode")
 		elif( powermode = 3):
-			#hacer lo mismo que en modo 2
+			if(crontab_exist())
+				if(isPowermode2_on()):
+					system("sudo pm2")
+				else:
+					system("sudo pm1")
+			else:
+				log("Crontab doesn't exist. Changing to power mode 1.")
+				system("echo '1' > ./conf/powermode")
 	except:
 		log("Power mode config file doesn't exist. Creating one and switching to power mode 1.")
 		system("echo '1' > ./conf/powermode")
