@@ -14,6 +14,7 @@
 	start an instance. '''
 
 import sys
+sys.path.append( "./lib" )
 import syslog
 import time
 import datetime
@@ -74,11 +75,11 @@ if len(sys.argv) < 2 or sys.argv[1] not in [COMMAND_START, COMMAND_STOP, COMMAND
 #backup directories files.
 def getFilesToSend():
 	try:
-		with open("sendedFiles.txt", 'r') as file:
+		with open("./config/sendedFiles", 'r') as file:
 			sendedFiles = [x.strip('\n') for x in file.readlines()]
 		file.close()
 	except:
-		log('No files in sendedFiles.txt')
+		log('No files in sendedFiles configuration.')
 		sendedFiles = []
 	
 	datafiles = [f for f in listdir(samples_path) if isfile(join(samples_path, f))]
@@ -102,13 +103,13 @@ def turnWifiOff():
 	log('Turn off wifi after send data.')
 
 def mark_as_send(file_name):
-	file_size = int(utils.getConfiguration('file_size.txt'))
+	file_size = int(utils.getConfiguration('file_size'))
 	with open(samples_path+file_name) as datafile:
 			samples_in_file = enumerate(datafile)
 	datafile.close()
 
 	if(samples_in_file >= file_size):
-		with open("sendedFiles.txt", 'a+') as file:
+		with open("./config/sendedFiles", 'a+') as file:
 			file.write(file_name+"\n")
 		file.close
 
@@ -119,8 +120,8 @@ def log(msg):
 
 def count():
 	while 1:
-		frequency = int(utils.getConfiguration('frequency_scp.txt'))
-		powermode = int(utils.getConfiguration('powermode.txt'))
+		frequency = int(utils.getConfiguration('frequency_scp'))
+		powermode = int(utils.getConfiguration('powermode'))
 
 		if(powermode == 2 or powermode == 3):
 			turnWifiOn()
@@ -165,7 +166,7 @@ if sys.argv[1] == COMMAND_START:
 		print('Daemonization failed')
 
 elif sys.argv[1] == COMMAND_RESTORE:
-	with open("sendedFiles.txt", 'w+') as file:
+	with open("./config/sendedFiles", 'w+') as file:
 		print "Data about sended files cleaned."
 		log("Data about sended files cleaned.")
 	file.close()

@@ -105,7 +105,7 @@ def validateInterval_multiple(form):
 #Login validation.
 def check_login( login, password ):
 	try:
-		with open("login.txt", 'r') as file:
+		with open("./config/login", 'r') as file:
 			login_hash = file.readline().strip()
 			password_hash = file.readline().strip()
 		file.close()

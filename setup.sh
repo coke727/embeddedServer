@@ -27,6 +27,7 @@ if [ -d "/sys/bus/w1/devices/28*" ]; then
 		sudo echo "" >> /etc/rc.local
 		sudo echo -n "sudo python " >> /etc/rc.local
 		sudo echo -n $(readlink -f weatherStation.py) >> /etc/rc.local
+		sudo echo "exit 0" >> /etc/rc.local
  	fi
 	
 	#Create temporal data dirs.
@@ -38,7 +39,7 @@ if [ -d "/sys/bus/w1/devices/28*" ]; then
 		echo "Execute setup.sh after install the RTC module for enable 3º power mode." >> ./config/rtc_state
 	else
 		if [ -f "./config/rtc_state"]; then
-			rm ./config/rtc_state.txt
+			rm ./config/rtc_state
 		else
 			echo "RTC detectado correctamente."
 		fi

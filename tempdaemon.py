@@ -3,6 +3,7 @@ import commands
 import glob
 import yapdi
 import sys
+sys.path.append( "./lib" )
 import syslog
 import datetime
 import time
@@ -47,8 +48,8 @@ def get_arguments():
 	global frequency
 	global number_samples
 
-	frequency = int(utils.getConfiguration("frequency_temp.txt"))
-	number_samples = int(utils.getConfiguration("file_size.txt"))
+	frequency = int(utils.getConfiguration("frequency_temp"))
+	number_samples = int(utils.getConfiguration("file_size"))
 
 def usage():
 	print("USAGE: python %s %s|%s|%s" % (sys.argv[0], COMMAND_START, COMMAND_STOP, COMMAND_RESTART))
