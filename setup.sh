@@ -16,6 +16,14 @@ if [ -d "/sys/bus/w1/devices/28*" ]; then
 	sudo wpa_supplicant -Dwext -iwlan0 -c /etc/wpa_supplicant.conf
 	sudo dhcpcd wlan0
 
+	#Adding scripts to PATH
+	if [ ! -d "~/bin"]; then
+		mkdir ~/bin
+	cp -a ./scripts/mpnormal ~/bin
+	cp -a ./scripts/mp1 ~/bin
+	cp -a ./scripts/mp2 ~/bin
+	cp -a ./scripts/mp3 ~/bin
+
 	#Adding server execution to boot
 	if grep -q weatherStation.py "/etc/rc.local"; then
 		echo "[Warning!] The weather station is already in /etc/rc.local"

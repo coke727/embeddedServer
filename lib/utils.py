@@ -156,7 +156,7 @@ def write_crontab( week, isAdvanced):
 	if(isAdvanced):
 		#Create cronjobs for enter in mode 2
 		for i, day in enumerate(week):
-			job  = cron.new(command='echo hola modo2', comment= 'mp2 '+week_keys[i])
+			job  = cron.new(command='sudo pm2', comment= 'mp2 '+week_keys[i])
 			job.dow.on(week_keys[i])
 			job.hour.on(day[0][0])
 			for interval in day[1:]:
@@ -164,7 +164,7 @@ def write_crontab( week, isAdvanced):
 
 		#Create cronjobs for exist from mode 2 to the last mode used.
 		for i, day in enumerate(week):
-			job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
+			job  = cron.new(command='sudo pm1', comment= '!mp2 '+week_keys[i])
 			job.dow.on(week_keys[i])
 			job.hour.on(day[0][1])
 			for interval in day[1:]:
@@ -172,13 +172,13 @@ def write_crontab( week, isAdvanced):
 	else:
 		#Create cronjobs for enter in mode 2
 		for i, day in enumerate(week):
-			job  = cron.new(command='echo hola modo2', comment= 'mp2 '+week_keys[i])
+			job  = cron.new(command='sudo pm2', comment= 'mp2 '+week_keys[i])
 			job.dow.on(week_keys[i])
 			job.hour.on(day[0])
 
 		#Create cronjobs for exist from mode 2 to the last mode used.
 		for i, day in enumerate(week):
-			job  = cron.new(command='echo adios modo2', comment= '!mp2 '+week_keys[i])
+			job  = cron.new(command='sudo pm1', comment= '!mp2 '+week_keys[i])
 			job.dow.on(week_keys[i])
 			job.hour.on(day[1])
 	#Write crontab in a file and in system cron table.

@@ -60,10 +60,14 @@ def powerMode_configuration():
 
 		if( powermode = 0):
 			#execute script
+			system("sudo pmnormal")
 			#start server
+			system("sudo python server.py")
 		elif( powermode = 1):
 			#execute script
+			system("sudo pm1")
 			#start server
+			system("sudo python server.py")
 		elif( powermode = 2):
 			#get crontab (si no existe pasar a 1) y ejecutarla.
 			#mirar en que intervalo estamos si dentro de 2 o fuera y actuar en funcion.
