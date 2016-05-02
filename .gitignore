@@ -1,5 +1,5 @@
 backups
-html/web.html
+html/*.html
 crons
 *.pyc
 power_saving_notes.txt

@@ -44,3 +44,16 @@ def create_web(num_samples):
 			new_file.close()
 			self.create_empty()
 	old_file.close()
+
+def make_pages(domain):
+	templates = [f for f in listdir("html/templates/") if isfile(join("html/templates/", f))]
+	for template in templates:
+		set_domain(template, domain)
+
+def set_domain(path, domain):
+	with file("html/templates/"+path,'r') as template:
+		with open("html/"+path, 'w+') as page:
+			for line in template:
+				page.write(line.replace('localhost', domain))
+	template.close()
+    
