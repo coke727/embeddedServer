@@ -11,7 +11,6 @@ $(document).ready(function($) {
 
     $("#general").click(function(event) {
     	var frequency = document.getElementById("frequency").value;
-
     	if(frequency < 10) {
         	if( !confirm('A low value for frequency can spend so much power. Are you sure?') ) 
             	event.preventDefault();

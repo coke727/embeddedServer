@@ -57,8 +57,8 @@ def getConfiguration(config_name):
 
 def validateInterval(string_start, string_end):
 	if(isInt(string_start) and isInt(string_end)):
-		start = int(form["start"].value)
-		end = int(form["end"].value)
+		start = int(string_start)
+		end = int(string_end)
 		if start < end and  start > 0 and end < 24 and (start-end) < 23:
 			return True
 		else:
