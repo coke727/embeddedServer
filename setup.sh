@@ -1,14 +1,20 @@
 #!/bin/sh
 
-if [ -d "/sys/bus/w1/devices/28*" ]; then
-
+ACTUAL = pwd
+cd /sys/bus/w1/devices
+shopt -s nullglob
+set -- 28*
+if [ $# -gt 0 ]; then
+	cd $ACTUAL
 	#Download the repository with the code.
-	if [ ! -d "./embeddedServer"]; then
+	if [ -d "./embeddedServer"]; then
 		echo "Downloading weather station code from Github."
 		git clone https://github.com/coke727/embeddedServer.git
+		cd embeddedServer
 	else
 		echo "[Warning!] Weather station code already in this directory. I will use the code already in the device, if it is not desirable move the code from this directory and execute this script another time."
 		cd embeddedServer
+	fi
 
 	#Wpa_supplicant setup
 	echo "Configuration eduroam network with wpa_supplicant."
@@ -19,6 +25,8 @@ if [ -d "/sys/bus/w1/devices/28*" ]; then
 	#Adding scripts to PATH
 	if [ ! -d "~/bin"]; then
 		mkdir ~/bin
+	fi
+
 	cp -a ./scripts/mpnormal ~/bin
 	cp -a ./scripts/mp1 ~/bin
 	cp -a ./scripts/mp2 ~/bin
@@ -42,6 +50,7 @@ if [ -d "/sys/bus/w1/devices/28*" ]; then
 	echo "Creating temporal data directories."
 	mkdir -p ./logs ./crons ./config ./data/backup
 
+	#Checking rtc sensor.
 	if [ ! -d "/sys/class/rtc/rtc0"]; then
 		echo " [Warning!] There isn't an RTC module installed. Please install the required hardware and restart this script. Otherwise the 3º power mode will be disable."
 		echo "Execute setup.sh after install the RTC module for enable 3º power mode." >> ./config/rtc_state
