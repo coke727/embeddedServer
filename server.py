@@ -224,7 +224,7 @@ class myHandler(BaseHTTPRequestHandler):
 
 				#Create scp task.
 				#TODO encriptar datos que se pasan al script (?)
-				p = subprocess.Popen(["python", "scpdaemon.py", "start", form["scp"].value.trim(), form["user"].value.trim(), form["port"].value.trim(), form["directory"].value.trim()], stdin=PIPE, stdout=PIPE)
+				p = subprocess.Popen(["python", "scpdaemon.py", "start", form["scp"].value, form["user"].value, form["port"].value, form["directory"].value], stdin=PIPE, stdout=PIPE)
 				print p.communicate(form["password"].value)
 				#TODO check that is correct, subprocess.check~
 

@@ -68,11 +68,17 @@ def get_data_file():
 		with open(samples_path+datafiles[0]) as samples:
 			samples_in_file = enumerate(samples)
 			if(samples_in_file >= number_samples):
+				create_empty("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt")
 				return ("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt", 0)
 			else:
 				return (samples_path+datafiles[0], samples_in_file)
 	except:
+		create_empty("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt")
 		return ("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt", 0)
+
+def create_empty(name):
+	file = open("samples_path/"+name, 'w+')
+	file.close()
 
 
 def count():
@@ -83,7 +89,7 @@ def count():
 
 	while 1:
 		if (samples_in_file >= number_samples):
-			file_data = self.get_data_file()
+			file_data = get_data_file()
 			file_path = file_data[0]
 			samples_in_file = file_data[1]
 		temp_c = read_temp() 
