@@ -164,7 +164,7 @@ def temperature_configuration():
 		system("echo '120' > ./config/file_size")
 
 	system('sudo python tempdaemon.py start')
-	log("Temperature daemon started. Frequency " + frequency + "min and file size "+ size + " samples.")
+	log("Temperature daemon started. Frequency " + str(frequency) + "min and file size "+ str(size) + " samples.")
 
 def main(argv):
 	log("Device just boot. Starting weather station.")
