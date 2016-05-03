@@ -94,12 +94,12 @@ def powerMode_configuration():
 			#execute script
 			system("sudo pmnormal")
 			#start server
-			system("sudo python server.py")
+			system("sudo python server.py &")
 		elif( powermode == 1):
 			#execute script
 			system("sudo pm1")
 			#start server
-			system("sudo python server.py")
+			system("sudo python server.py &")
 		elif( powermode == 2):
 			if(crontab_exist()):
 				if(isPowermode2_on()):

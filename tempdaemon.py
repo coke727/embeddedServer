@@ -57,7 +57,7 @@ def get_arguments():
 	frequency = int(utils.getConfiguration("frequency_temp"))
 	number_samples = int(utils.getConfiguration("file_size"))
 
-	log("Get arguments: Frequency "+ frequency +" and Number Samples " + number_samples)
+	log("Get arguments: Frequency "+ str(frequency) +" and Number Samples " + str(number_samples))
 
 def usage():
 	print("USAGE: python %s %s|%s|%s" % (sys.argv[0], COMMAND_START, COMMAND_STOP, COMMAND_RESTART))
@@ -74,15 +74,15 @@ def get_data_file():
 	samples_in_file = 0
 	try:
 		with open(samples_path+datafiles[0]) as samples:
-			samples_in_file = enumerate(samples)
+			samples_in_file = len(samples.readlines())
 			if(samples_in_file >= number_samples):
 				create_empty("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt")
-				return ("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt", 0)
+				return (samples_path+"datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt", 0)
 			else:
 				return (samples_path+datafiles[0], samples_in_file)
 	except:
 		create_empty("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt")
-		return ("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt", 0)
+		return (samples_path+"datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt", 0)
 
 def create_empty(name):
 	file = open(samples_path+name, 'w+')
@@ -98,16 +98,21 @@ def count():
 
 	while 1:
 		if (samples_in_file >= number_samples):
-			log("File completed: " + samples_in_file + " samples with limit "+ number_samples)
+			log("File completed: " + str(samples_in_file) + " samples with limit "+ str(number_samples))
 			file_data = get_data_file()
 			file_path = file_data[0]
 			samples_in_file = file_data[1]
 		temp_c = read_temp() 
 		time_now = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
-		with file(file_path,'r') as original: data = original.read()
+		try:
+			with file(file_path,'r') as original: data = original.read()
+		except:
+			log("Can't open actual data file. Skipping data file and creating new one.")
+			with file("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt",'w+') as original: data = original.read()
+
 		with file(file_path,'w+') as modified: modified.write(str(temp_c) + "; "+ time_now+"\n" + data)
 		samples_in_file+=1
-		time.sleep(frequency)
+		time.sleep(frequency*60)
 
 if sys.argv[1] == COMMAND_START:
 	daemon = yapdi.Daemon()
