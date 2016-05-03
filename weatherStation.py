@@ -27,7 +27,7 @@ def ip_configuration():
 			set_domain(newip[0])
 	except:
 		newip = subprocess.Popen(["hostname", "-I"], stdout=subprocess.PIPE).communicate()[0].split()
-		system("hostname -I > ./config/ip")
+		system('echo "'+ newip[0] +'" > ./config/ip')
 		log("Ip file doesn't exist, generating one.")
 		set_domain(newip[0])
 

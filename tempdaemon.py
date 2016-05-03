@@ -26,6 +26,12 @@ COMMAND_RESTART = 'restart'
 
 frequency = 600
 number_samples = 120
+log_path = "./logs/templog.txt"
+
+def log(msg):
+	with open(log_path, 'a+') as log:
+		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + msg + '\n')
+	log.close()
 
 def read_temp_raw():
 	f = open(device_file, 'r')
@@ -50,6 +56,8 @@ def get_arguments():
 
 	frequency = int(utils.getConfiguration("frequency_temp"))
 	number_samples = int(utils.getConfiguration("file_size"))
+
+	log("Get arguments: Frequency "+ frequency +" and Number Samples " + number_samples)
 
 def usage():
 	print("USAGE: python %s %s|%s|%s" % (sys.argv[0], COMMAND_START, COMMAND_STOP, COMMAND_RESTART))
@@ -77,8 +85,9 @@ def get_data_file():
 		return ("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt", 0)
 
 def create_empty(name):
-	file = open("samples_path/"+name, 'w+')
+	file = open(samples_path+name, 'w+')
 	file.close()
+	log("New data file: datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt")
 
 
 def count():
@@ -89,6 +98,7 @@ def count():
 
 	while 1:
 		if (samples_in_file >= number_samples):
+			log("File completed: " + samples_in_file + " samples with limit "+ number_samples)
 			file_data = get_data_file()
 			file_path = file_data[0]
 			samples_in_file = file_data[1]
@@ -110,6 +120,7 @@ if sys.argv[1] == COMMAND_START:
 
 	# Execute if daemonization was successful else exit
 	if retcode == yapdi.OPERATION_SUCCESSFUL:
+		log("Starting temperature daemon.")
 		count()
 	else:
 		print('Daemonization failed')
@@ -121,12 +132,15 @@ elif sys.argv[1] == COMMAND_STOP:
 	if not daemon.status():
 		print("No instance running.")
 		exit()
+
+	log("Stoping temperature daemon.")
 	retcode = daemon.kill()
 	if retcode == yapdi.OPERATION_FAILED:
 		print('Trying to stop running instance failed')
 
 elif sys.argv[1] == COMMAND_RESTART:
 	daemon = yapdi.Daemon()
+	log("Daemon restarted.")
 	retcode = daemon.restart()
 
 	# Execute if daemonization was successful else exit

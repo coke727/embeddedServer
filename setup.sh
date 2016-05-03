@@ -1,10 +1,12 @@
 #!/bin/sh
 
-ACTUAL = pwd
+ACTUAL=$(pwd)
 cd /sys/bus/w1/devices
 shopt -s nullglob
 set -- 28*
+
 if [ $# -gt 0 ]; then
+
 	cd $ACTUAL
 	#Download the repository with the code.
 	if [ -d "./embeddedServer"]; then
@@ -18,7 +20,7 @@ if [ $# -gt 0 ]; then
 
 	#Wpa_supplicant setup
 	echo "Configuration eduroam network with wpa_supplicant."
-	sudo cat wpa_supplicant >> /etc/wpa_supplicant.conf
+	sudo cat wpa_supplicant >> /etc/wpa_supplicant/wpa_supplicant.conf
 	sudo wpa_supplicant -Dwext -iwlan0 -c /etc/wpa_supplicant.conf
 	sudo dhcpcd wlan0
 
@@ -43,6 +45,7 @@ if [ $# -gt 0 ]; then
 		sudo echo "" >> /etc/rc.local
 		sudo echo -n "sudo python " >> /etc/rc.local
 		sudo echo -n $(readlink -f weatherStation.py) >> /etc/rc.local
+		sudo echo -e "\n" >> /etc/rc.local
 		sudo echo "exit 0" >> /etc/rc.local
  	fi
 	
