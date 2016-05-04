@@ -24,12 +24,8 @@ from weatherStation import ip_configuration
 
 PORT_NUMBER = 80
 configuration_path = "./html/configuration.html"
-samples_show = 20
-samples_file = 120
-scp_adress = ""
-scp_frequency = 0
+samples_show = 0
 store_data = False
-frequency = 0
 cookie_storage = CookieStorage()
 
 #This class will handles any incoming request from the browser 
@@ -58,6 +54,9 @@ class myHandler(BaseHTTPRequestHandler):
 	#Handler for the GET requests
 	def do_GET(self):
 		if self.path=="/":
+			global samples_show
+			if (samples_shown == 0):
+				samples_show = int(utils.getConfiguration("samples_show"))
 			create_web(samples_show)
 			self.path="html/web.html"
 		if self.path=="/configuration":
@@ -135,8 +134,6 @@ class myHandler(BaseHTTPRequestHandler):
 
 		if(self.path == '/configuration'):
 			global samples_show
-			global samples_file
-			global frequency
 			isDataCorrect = True
 
 			print "[Configuration Post]"
@@ -164,7 +161,6 @@ class myHandler(BaseHTTPRequestHandler):
 						isDataCorrect = False
 
 					if( utils.isInt( form["samples"].value ) and int( form["samples"].value ) > 0 ):
-						samples_file = int(form["samples"].value)
 						utils.setConfiguration("file_size" , samples_file)
 					else:
 						isDataCorrect = False
@@ -332,7 +328,8 @@ try:
 	#Create a web server and define the handler to manage the
 	#incoming request
 	ip_configuration()
-	server = HTTPServer(('', PORT_NUMBER), myHandler)
+	domain = utils.getConfiguration("domain")
+	server = HTTPServer((domain, PORT_NUMBER), myHandler)
 	print 'Started httpserver on port ' , PORT_NUMBER
 
 	#httpd = BaseHTTPServer.HTTPServer(('localhost', 4443), myHandler)

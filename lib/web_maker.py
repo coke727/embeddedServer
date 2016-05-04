@@ -81,5 +81,5 @@ def changeDeviceDomain(newip):
 	system('sudo echo -e "' +newip+ '\t' +hostname+machine_number+domain +'\t'+ hostname+machine_number+'\n" >> /etc/hosts')
 	system('sudo /etc/init.d/hostname.sh')
 
-	return hostname+machine_number+domain
+	utils.setConfiguration("domain", hostname+machine_number+domain)
     

@@ -31,8 +31,8 @@ def ip_configuration():
 		newip = subprocess.Popen(["hostname", "-I"], stdout=subprocess.PIPE).communicate()[0].split()
 		system('echo "'+ newip[0] +'" > ./config/ip')
 		utils.log(log_path, "Ip file doesn't exist, generating one.")
-		newDomain = web_maker.changeDeviceDomain(newip[0])
-		utils.log(log_path, "Device domain changed to: " + newDomain)
+		web_maker.changeDeviceDomain(newip[0])
+		utils.log(log_path, "Device domain changed to: " + utils.getConfiguration("domain"))
 
 def isPowermode2_on():
 	with open("./crons/pm2.tab", 'r') as cron:
