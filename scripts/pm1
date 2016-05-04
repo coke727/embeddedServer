@@ -1,3 +1,4 @@
 #!/bin/bash
 sudo ifup wlan0
 sudo cpufreq-set -g powersave
+sudo python ../embeddedServer/server.py

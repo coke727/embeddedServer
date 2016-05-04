@@ -20,6 +20,7 @@ from CookieStorage import CookieStorage
 from web_maker import create_empty, create_web
 import re
 import utils
+from weatherStation import ip_configuration
 
 PORT_NUMBER = 80
 configuration_path = "./html/configuration.html"
@@ -53,11 +54,6 @@ class myHandler(BaseHTTPRequestHandler):
 		self.end_headers()
 		self.wfile.write(f.read())
 		f.close()
-
-	def setConfiguration(self, file, value):		
-		with open("./config/"+file, 'w+') as file:
-			file.write(str(value))
-		file.close()
 
 	#Handler for the GET requests
 	def do_GET(self):
@@ -163,19 +159,19 @@ class myHandler(BaseHTTPRequestHandler):
 				else:
 					if( utils.isInt( form["websamples"].value ) and int( form["websamples"].value ) > 0 ):
 						samples_show = int(form["websamples"].value)
-						self.setConfiguration("samples_show" , samples_show)
+						utils.setConfiguration("samples_show" , samples_show)
 					else:
 						isDataCorrect = False
 
 					if( utils.isInt( form["samples"].value ) and int( form["samples"].value ) > 0 ):
 						samples_file = int(form["samples"].value)
-						self.setConfiguration("file_size" , samples_file)
+						utils.setConfiguration("file_size" , samples_file)
 					else:
 						isDataCorrect = False
 
 					if( utils.isInt( form["frequency"].value ) and int( form["frequency"].value ) > 0 ):
 						frequency = int(form["frequency"].value)
-						self.setConfiguration("frequency_temp" , frequency)
+						utils.setConfiguration("frequency_temp" , frequency)
 					else:
 						isDataCorrect = False
 
@@ -210,7 +206,7 @@ class myHandler(BaseHTTPRequestHandler):
 				if utils.isInt(form["scpfrequency"].value) and utils.isInt(form["port"].value) and form["scp"].value and form["user"].value and form["directory"].value and form["password"].value:
 					isDataCorrect = True
 
-				self.setConfiguration("frequency_scp", form["scpfrequency"].value)
+				utils.setConfiguration("frequency_scp", form["scpfrequency"].value)
 
 				#Store data if user wants.
 				if store_data:
@@ -242,7 +238,7 @@ class myHandler(BaseHTTPRequestHandler):
 				#TODO eliminar datos de otros modos, overclock etc.
 				print "[Power mode normal Post]"
 				self.setPowerSavingModeNormal()
-				self.setConfiguration("powermode", "0")
+				utils.setConfiguration("powermode", "0")
 				self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
 			else:
 				self.answerPost(curdir + sep + "html/session-fail.html", 200)
@@ -253,7 +249,7 @@ class myHandler(BaseHTTPRequestHandler):
 				#TODO pmnormal.sh -> wifi activado, con underclock, eliminar datos que generen los otros modos etc
 				print "[Power mode 1 Post]"
 				self.setPowerSavingMode1()
-				self.setConfiguration("powermode", "1")
+				utils.setConfiguration("powermode", "1")
 				self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
 			else:
 				self.answerPost(curdir + sep + "html/session-fail.html", 200)
@@ -273,7 +269,7 @@ class myHandler(BaseHTTPRequestHandler):
 							})
 				if(utils.validateInterval_multiple(form)):
 					utils.create_crontab(form, True)
-					self.setConfiguration("powermode", "2")
+					utils.setConfiguration("powermode", "2")
 					self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
 				else:
 					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
@@ -297,7 +293,7 @@ class myHandler(BaseHTTPRequestHandler):
 				if(utils.validateInterval(form["start"].value, form["end"].value)):
 					monday = tuesday = wednesday = thursday = friday = saturday = sunday = (int(form["start"].value),int(form["end"].value))
 					utils.write_crontab([monday, tuesday, wednesday, thursday, friday, saturday, sunday], False)
-					self.setConfiguration("powermode", "2")
+					utils.setConfiguration("powermode", "2")
 					self.answerPost(curdir + sep + "html/configuration-changed.html",200)
 				else:
 					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
@@ -319,7 +315,7 @@ class myHandler(BaseHTTPRequestHandler):
 
 				if(utils.validateInterval_eachDay(form)):
 					utils.create_crontab(form, False)
-					self.setConfiguration("powermode", "2")
+					utils.setConfiguration("powermode", "2")
 					self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
 				else:
 					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
@@ -329,12 +325,13 @@ class myHandler(BaseHTTPRequestHandler):
 		if(self.path == '/pm3'):
 			configuration_path = './html/configuration_mode3.html'
 			print "[Power mode 3 Post]"
-			self.setConfiguration("powermode", "3")
+			utils.setConfiguration("powermode", "3")
 			#TODO modo 3 -> pmsleep.sh -> depender del RTC para encender raspi antes de cada medida o en la fecha pedida por el usuario
 			#hay que eliminar los datos generados por los otros modos y generar los datos necesarios.
 try:
 	#Create a web server and define the handler to manage the
 	#incoming request
+	ip_configuration()
 	server = HTTPServer(('', PORT_NUMBER), myHandler)
 	print 'Started httpserver on port ' , PORT_NUMBER
 

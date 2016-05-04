@@ -1,3 +1,4 @@
 #!/bin/bash
 sudo ifdown wlan0
 sudo cpufreq-set -g powersave
+ps -ef | grep 'python server.py' | grep -v grep | awk '{print $2}' | xargs kill

@@ -1,5 +1,6 @@
 from os import listdir, stat
 from os.path import isfile, join
+import utils
 
 samples_path ="./data/"
 
@@ -56,4 +57,29 @@ def set_domain(path, domain):
 			for line in template:
 				page.write(line.replace('localhost', domain))
 	template.close()
+
+def changeDeviceDomain(newip):
+	domain = ".fit.vutbr.cz"
+	hostname = "dhcpr"
+	machine_number = "000"
+
+	ip = newip.split('.')
+
+	if (int(ip[3]) == 179):
+		hostname = "dhcpr"
+	elif (int(ip[3]) == 178):
+		hostname = "dhcps"
+	if ( int(ip[3]) < 10 ):
+		machine_number = "00"+ip[3]
+	elif (int(ip[3]) < 100):
+		machine_number = "0"+ip[3]
+	elif (int(ip[3]) < 1000):
+		machine_number = ip[3]
+
+	make_pages(hostname+machine_number+domain)
+	system('sudo echo "' +hostname+machine_number+ '" > /etc/hostname')
+	system('sudo echo -e "' +newip+ '\t' +hostname+machine_number+domain +'\t'+ hostname+machine_number+'\n" >> /etc/hosts')
+	system('sudo /etc/init.d/hostname.sh')
+
+	return hostname+machine_number+domain
     

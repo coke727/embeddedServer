@@ -7,9 +7,15 @@ set -- 28*
 
 if [ $# -gt 0 ]; then
 
-	cd $ACTUAL
+	sudo apt-get install python-pip python-crypto python-dev libgmp-dev cpufrequtils
+	sudo apt-get install build-essential libffi-dev libssl-dev
+	sudo pip install python-crontab
+	sudo pip install cryptography
+	sudo pip install cripto
+	sudo pip install paramiko
+
 	#Download the repository with the code.
-	if [ -d "./embeddedServer"]; then
+	if [ -d $ACTUAL"/embeddedServer"]; then
 		echo "Downloading weather station code from Github."
 		git clone https://github.com/coke727/embeddedServer.git
 		cd embeddedServer
@@ -25,7 +31,7 @@ if [ $# -gt 0 ]; then
 	sudo dhcpcd wlan0
 
 	#Adding scripts to PATH
-	if [ ! -d "~/bin"]; then
+	if [ ! -d "/home/"$USER"/bin"]; then
 		mkdir ~/bin
 	fi
 
@@ -33,6 +39,7 @@ if [ $# -gt 0 ]; then
 	cp -a ./scripts/mp1 ~/bin
 	cp -a ./scripts/mp2 ~/bin
 	cp -a ./scripts/mp3 ~/bin
+	chmod 777 ~/bin/*
 
 	#Adding server execution to boot
 	if grep -q weatherStation.py "/etc/rc.local"; then
@@ -51,7 +58,7 @@ if [ $# -gt 0 ]; then
 	
 	#Create temporal data dirs.
 	echo "Creating temporal data directories."
-	mkdir -p ./logs ./crons ./config ./data/backup
+	mkdir -p $ACTUAL"/embeddedServer/logs" $ACTUAL"/embeddedServer/crons" $ACTUAL"/embeddedServer/config" $ACTUAL"/embeddedServer/data/backup"
 
 	#Checking rtc sensor.
 	if [ ! -d "/sys/class/rtc/rtc0"]; then

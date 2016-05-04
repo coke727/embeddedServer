@@ -9,6 +9,11 @@ week_starts = ['monday_start', 'tuesday_start', 'wednesday_start', 'thursday_sta
 week_ends = ['monday_end', 'tuesday_end', 'wednesday_end', 'thursday_end', 'friday_end', 'saturday_end', 'sunday_end']
 week_days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 
+def log(log_path, msg):
+	with open(log_path, 'a+') as log:
+		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + msg + '\n')
+	log.close()
+
 # Simplify the intervals array returning a new array simplified.
 def remove_overlap( intervals ): #sol by http://www.geeksforgeeks.org/merging-intervals/
 	sorted_by_lower_bound = sorted(intervals, key=lambda tup: tup[0])
@@ -54,6 +59,11 @@ def getConfiguration(config_name):
 		return value
 	except:
 		return value
+
+def setConfiguration(file_name, value):		
+	with open("./config/"+file_name, 'w+') as file:
+		file.write(str(value))
+	file.close()
 
 def validateInterval(string_start, string_end):
 	if(isInt(string_start) and isInt(string_end)):
@@ -156,7 +166,7 @@ def write_crontab( week, isAdvanced):
 	if(isAdvanced):
 		#Create cronjobs for enter in mode 2
 		for i, day in enumerate(week):
-			job  = cron.new(command='sudo pm2', comment= 'mp2 '+week_keys[i])
+			job  = cron.new(command='sudo pm2', comment= 'pm2 '+week_keys[i])
 			job.dow.on(week_keys[i])
 			job.hour.on(day[0][0])
 			for interval in day[1:]:
@@ -164,7 +174,7 @@ def write_crontab( week, isAdvanced):
 
 		#Create cronjobs for exist from mode 2 to the last mode used.
 		for i, day in enumerate(week):
-			job  = cron.new(command='sudo pm1', comment= '!mp2 '+week_keys[i])
+			job  = cron.new(command='sudo pm1', comment= '!pm2 '+week_keys[i])
 			job.dow.on(week_keys[i])
 			job.hour.on(day[0][1])
 			for interval in day[1:]:
@@ -172,15 +182,24 @@ def write_crontab( week, isAdvanced):
 	else:
 		#Create cronjobs for enter in mode 2
 		for i, day in enumerate(week):
-			job  = cron.new(command='sudo pm2', comment= 'mp2 '+week_keys[i])
+			job  = cron.new(command='sudo pm2', comment= 'pm2 '+week_keys[i])
 			job.dow.on(week_keys[i])
 			job.hour.on(day[0])
 
 		#Create cronjobs for exist from mode 2 to the last mode used.
 		for i, day in enumerate(week):
-			job  = cron.new(command='sudo pm1', comment= '!mp2 '+week_keys[i])
+			job  = cron.new(command='sudo pm1', comment= '!pm2 '+week_keys[i])
 			job.dow.on(week_keys[i])
 			job.hour.on(day[1])
 	#Write crontab in a file and in system cron table.
-	cron.write( './crons/mp2.tab' )
+	cron.write( './crons/pm2.tab' )
 	cron.write_to_user( user=True )
+
+def crontab_exist():
+	try:
+		with open("./crons/pm2.tab", 'r') as cron:
+			log("Using actual crontab.")
+		cron.close()
+		return True
+	except:
+		return False

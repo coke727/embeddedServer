@@ -8,6 +8,7 @@ from subprocess import PIPE
 import web_maker
 import time
 import datetime
+import utils
 
 log_path = "./logs/weatherstationlog.txt"
 
@@ -22,45 +23,16 @@ def ip_configuration():
 
 		newip = subprocess.Popen(["hostname", "-I"], stdout=subprocess.PIPE).communicate()[0].split()
 		if (newip[0] != ip):
-			log("IP changed. New ip is " + newip)
+			utils.log(log_path,"IP changed. New ip is " + newip)
 			system('echo "'+ newip[0] +'" > ./config/ip')
-			set_domain(newip[0])
+			newDomain = web_maker.changeDeviceDomain(newip[0])
+			utils.log(log_path, "Device domain changed to: " + newDomain)
 	except:
 		newip = subprocess.Popen(["hostname", "-I"], stdout=subprocess.PIPE).communicate()[0].split()
 		system('echo "'+ newip[0] +'" > ./config/ip')
-		log("Ip file doesn't exist, generating one.")
-		set_domain(newip[0])
-
-def set_domain(newip):
-	domain = ".fit.vutbr.cz"
-	hostname = "dhcpr"
-	machine_number = "000"
-
-	ip = newip.split('.')
-
-	if (int(ip[3]) == 179):
-		hostname = "dhcpr"
-	elif (int(ip[3]) == 178):
-		hostname = "dhcps"
-	if (int(ip[3]) < 100):
-		machine_number = "0"+ip[3]
-	elif (int(ip[3]) < 10):
-		machine_number = "00"+ip[3]
-
-	log("New domain is " + hostname+machine_number+domain)
-	web_maker.make_pages(hostname+machine_number+domain)
-	system('sudo echo "' +hostname+machine_number+ '" > /etc/hostname')
-	system('sudo echo -e "' +newip+ '\t' +hostname+machine_number+domain +'\t'+ hostname+machine_number+'\n" >> /etc/hosts')
-	system('sudo /etc/init.d/hostname.sh')
-
-def crontab_exist():
-	try:
-		with open("./crons/pm2.tab", 'r') as cron:
-			log("Using actual crontab.")
-		cron.close()
-		return True
-	except:
-		return False
+		utils.log(log_path, "Ip file doesn't exist, generating one.")
+		newDomain = web_maker.changeDeviceDomain(newip[0])
+		utils.log(log_path, "Device domain changed to: " + newDomain)
 
 def isPowermode2_on():
 	with open("./crons/pm2.tab", 'r') as cron:
@@ -101,27 +73,30 @@ def powerMode_configuration():
 			#start server
 			system("sudo python server.py &")
 		elif( powermode == 2):
-			if(crontab_exist()):
+			if(utils.crontab_exist()):
 				if(isPowermode2_on()):
 					system("sudo pm2")
 				else:
 					system("sudo pm1")
 			else:
-				log("Crontab doesn't exist. Changing to power mode 1.")
-				system("echo '1' > ./config/powermode")
+				utils.log(log_path, "Crontab doesn't exist. Changing to power mode 1.")
+				utils.setConfiguration("powermode", 1)
+				system("pm1")
+
 		elif( powermode == 3):
-			if(crontab_exist()):
+			if(utils.crontab_exist()):
 				if(isPowermode2_on()):
 					system("sudo pm2")
 				else:
 					system("sudo pm1")
 			else:
-				log("Crontab doesn't exist. Changing to power mode 1.")
-				system("echo '1' > ./config/powermode")
+				utils.log(log_path, "Crontab doesn't exist. Changing to power mode 1.")
+				utils.setConfiguration("powermode", 1)
+				system("pm1")
 	except:
-		log("Power mode config file doesn't exist. Creating one and switching to power mode 1.")
-		system("echo '1' > ./config/powermode")
-		#ejecutar pm 1
+		utils.log(log_path, "Power mode config file doesn't exist. Creating one and switching to power mode 1.")
+		utils.setConfiguration("powermode", 1)
+		system("pm1")
 
 def scp_configuration():
 	try:
@@ -135,14 +110,9 @@ def scp_configuration():
 
 		p = subprocess.Popen(["python", "scpdaemon.py", "start", address, user, port, directory], stdin=PIPE, stdout=PIPE)
 		print p.communicate(password)
-		log("Scp daemon started")
+		utils.log(log_path, "Scp daemon started")
 	except:
-		log("Scp isn't set up. Not starting scp daemon.")
-	
-def log(msg):
-	with open(log_path, 'a+') as log:
-		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + msg + '\n')
-	log.close()
+		utils.log(log_path, "Scp isn't set up. Not starting scp daemon.")
 
 def temperature_configuration():
 	try:
@@ -151,8 +121,8 @@ def temperature_configuration():
 		tempfile.close()
 	except:
 		frequency = 10
-		log("Temperature isn't set up. Creating default configuration file. Default Frequency 10 minutes.")
-		system("echo '10' > ./config/frequency_temp")
+		utils.log(log_path, "Temperature isn't set up. Creating default configuration file. Default Frequency 10 minutes.")
+		utils.setConfiguration("frequency_temp", frequency)
 
 	try:
 		with open("./config/file_size", 'r') as sizefile:
@@ -160,14 +130,14 @@ def temperature_configuration():
 		sizefile.close()
 	except:
 		size = 120
-		log("File size isn't set up. Creating default configuration file. Default file size is 120 samples.")
-		system("echo '120' > ./config/file_size")
+		utils.log(log_path, "File size isn't set up. Creating default configuration file. Default file size is 120 samples.")
+		utils.setConfiguration("file_size", size)
 
-	system('sudo python tempdaemon.py start')
-	log("Temperature daemon started. Frequency " + str(frequency) + "min and file size "+ str(size) + " samples.")
+	system('sudo python tempdaemon.py start &')
+	utils.log(log_path, "Temperature daemon started. Frequency " + str(frequency) + "min and file size "+ str(size) + " samples.")
 
 def main(argv):
-	log("Device just boot. Starting weather station.")
+	utils.log(log_path, "Device just boot. Starting weather station.")
 
 	#Check actual device ip to adapt the hostname and hosts files in order to make visible device in BUT wifi network. 
 	ip_configuration()
@@ -180,6 +150,8 @@ def main(argv):
 
 	#Check temperature sensor and start temperature daemon.
 	temperature_configuration()
+
+	exit()
 
 	
 
