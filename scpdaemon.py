@@ -60,7 +60,6 @@ def get_arguments():
 		directory = sys.argv[5]
 		password = raw_input()
 		print ("addr %s user %s port %s dir %s pass %s" % (address, user, port, directory, password))
-
 	except:
 		usage()
 	#print ("frec %s addr %s user %s port %s dir %s pass %s" % (frequency, address, user, port, directory, password))
@@ -117,7 +116,7 @@ def mark_as_send(file_name):
 
 def log(msg):
 	with open(log_path, 'a+') as log:
-		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + msg + '\n')
+		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + str(msg) + '\n')
 	log.close()
 
 def count():
@@ -152,7 +151,7 @@ def count():
 
 if sys.argv[1] == COMMAND_START:
 	get_arguments()
-	daemon = yapdi.Daemon()
+	daemon = yapdi.Daemon(pidfile='/var/run/scp.pid')
 	log("Starting daemon.")
 
 	# Check whether an instance is already running
@@ -174,7 +173,7 @@ elif sys.argv[1] == COMMAND_RESTORE:
 	file.close()
 
 elif sys.argv[1] == COMMAND_STOP:
-	daemon = yapdi.Daemon()
+	daemon = yapdi.Daemon(pidfile='/var/run/scp.pid')
 	log("Daemon Stoped.")
 
 	# Check whether no instance is running
@@ -187,7 +186,7 @@ elif sys.argv[1] == COMMAND_STOP:
 
 elif sys.argv[1] == COMMAND_RESTART:
 	get_arguments()
-	daemon = yapdi.Daemon()
+	daemon = yapdi.Daemon(pidfile='/var/run/scp.pid')
 	retcode = daemon.restart()
 
 	# Execute if daemonization was successful else exit

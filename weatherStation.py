@@ -139,21 +139,19 @@ def temperature_configuration():
 def main(argv):
 	utils.log(log_path, "Device just boot. Starting weather station.")
 
+	#Check temperature sensor and start temperature daemon.
+	temperature_configuration()
+
+	#Check if exist scp configuration, if it exist start scp daemon.
+	scp_configuration()
+
 	#Check actual device ip to adapt the hostname and hosts files in order to make visible device in BUT wifi network. 
 	ip_configuration()
 
 	#Check actual power saving mode and start server if it is necesary.
 	powerMode_configuration()
 
-	#Check if exist scp configuration, if it exist start scp daemon.
-	scp_configuration()
-
-	#Check temperature sensor and start temperature daemon.
-	temperature_configuration()
-
 	exit()
-
-	
 
 if __name__ == "__main__":
    main(sys.argv[1:])

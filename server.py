@@ -55,7 +55,7 @@ class myHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		if self.path=="/":
 			global samples_show
-			if (samples_shown == 0):
+			if (samples_show == 0):
 				samples_show = int(utils.getConfiguration("samples_show"))
 			create_web(samples_show)
 			self.path="html/web.html"
@@ -161,7 +161,7 @@ class myHandler(BaseHTTPRequestHandler):
 						isDataCorrect = False
 
 					if( utils.isInt( form["samples"].value ) and int( form["samples"].value ) > 0 ):
-						utils.setConfiguration("file_size" , samples_file)
+						utils.setConfiguration("file_size" , int(form["samples"].value))
 					else:
 						isDataCorrect = False
 
@@ -328,8 +328,7 @@ try:
 	#Create a web server and define the handler to manage the
 	#incoming request
 	ip_configuration()
-	domain = utils.getConfiguration("domain")
-	server = HTTPServer((domain, PORT_NUMBER), myHandler)
+	server = HTTPServer(('', PORT_NUMBER), myHandler)
 	print 'Started httpserver on port ' , PORT_NUMBER
 
 	#httpd = BaseHTTPServer.HTTPServer(('localhost', 4443), myHandler)

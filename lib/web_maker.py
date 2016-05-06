@@ -1,4 +1,4 @@
-from os import listdir, stat
+from os import listdir, stat, system
 from os.path import isfile, join
 import utils
 
@@ -80,6 +80,7 @@ def changeDeviceDomain(newip):
 	system('sudo echo "' +hostname+machine_number+ '" > /etc/hostname')
 	system('sudo echo -e "' +newip+ '\t' +hostname+machine_number+domain +'\t'+ hostname+machine_number+'\n" >> /etc/hosts')
 	system('sudo /etc/init.d/hostname.sh')
+	system('sudo reboot')
 
 	utils.setConfiguration("domain", hostname+machine_number+domain)
     

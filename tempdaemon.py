@@ -28,11 +28,6 @@ frequency = 600
 number_samples = 120
 log_path = "./logs/templog.txt"
 
-def log(msg):
-	with open(log_path, 'a+') as log:
-		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + msg + '\n')
-	log.close()
-
 def read_temp_raw():
 	f = open(device_file, 'r')
 	lines = f.readlines()
@@ -57,7 +52,7 @@ def get_arguments():
 	frequency = int(utils.getConfiguration("frequency_temp"))
 	number_samples = int(utils.getConfiguration("file_size"))
 
-	log("Get arguments: Frequency "+ str(frequency) +" and Number Samples " + str(number_samples))
+	utils.log(log_path,"Get arguments: Frequency "+ str(frequency) +" and Number Samples " + str(number_samples))
 
 def usage():
 	print("USAGE: python %s %s|%s|%s" % (sys.argv[0], COMMAND_START, COMMAND_STOP, COMMAND_RESTART))
@@ -87,7 +82,7 @@ def get_data_file():
 def create_empty(name):
 	file = open(samples_path+name, 'w+')
 	file.close()
-	log("New data file: datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt")
+	utils.log(log_path,"New data file: datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt")
 
 
 def count():
@@ -98,7 +93,7 @@ def count():
 
 	while 1:
 		if (samples_in_file >= number_samples):
-			log("File completed: " + str(samples_in_file) + " samples with limit "+ str(number_samples))
+			utils.log(log_path,"File completed: " + str(samples_in_file) + " samples with limit "+ str(number_samples))
 			file_data = get_data_file()
 			file_path = file_data[0]
 			samples_in_file = file_data[1]
@@ -107,7 +102,7 @@ def count():
 		try:
 			with file(file_path,'r') as original: data = original.read()
 		except:
-			log("Can't open actual data file. Skipping data file and creating new one.")
+			utils.log(log_path,"Can't open actual data file. Skipping data file and creating new one.")
 			with file("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt",'w+') as original: data = original.read()
 
 		with file(file_path,'w+') as modified: modified.write(str(temp_c) + "; "+ time_now+"\n" + data)
@@ -115,7 +110,7 @@ def count():
 		time.sleep(frequency*60)
 
 if sys.argv[1] == COMMAND_START:
-	daemon = yapdi.Daemon()
+	daemon = yapdi.Daemon(pidfile='/var/run/temp.pid')
 
 	# Check whether an instance is already running
 	if daemon.status():
@@ -125,27 +120,27 @@ if sys.argv[1] == COMMAND_START:
 
 	# Execute if daemonization was successful else exit
 	if retcode == yapdi.OPERATION_SUCCESSFUL:
-		log("Starting temperature daemon.")
+		utils.log(log_path,"Starting temperature daemon.")
 		count()
 	else:
 		print('Daemonization failed')
 
 elif sys.argv[1] == COMMAND_STOP:
-	daemon = yapdi.Daemon()
+	daemon = yapdi.Daemon(pidfile='/var/run/temp.pid')
 
 	# Check whether no instance is running
 	if not daemon.status():
 		print("No instance running.")
 		exit()
 
-	log("Stoping temperature daemon.")
+	utils.log(log_path,"Stoping temperature daemon.")
 	retcode = daemon.kill()
 	if retcode == yapdi.OPERATION_FAILED:
 		print('Trying to stop running instance failed')
 
 elif sys.argv[1] == COMMAND_RESTART:
-	daemon = yapdi.Daemon()
-	log("Daemon restarted.")
+	daemon = yapdi.Daemon(pidfile='/var/run/temp.pid')
+	utils.log(log_path,"Daemon restarted.")
 	retcode = daemon.restart()
 
 	# Execute if daemonization was successful else exit

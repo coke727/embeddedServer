@@ -43,7 +43,7 @@ DETALLES:
 2º  ~~~~ ---- comprobar que el raw input realmente no almacena nada.
 4º  ~~~~ ---- el post a configuracion se hace validando con 0 como valor minimo, mirar si subir ese minimo o si poner máximo.
 11º      ---- Comprobar que las cookies se borran correctamente.
-18º ~~~~ ---- refactor labels de los forms, directory to store samples ---> añadir que es en la maquina del cliente no en server
+18º DONE ---- refactor labels de los forms, directory to store samples ---> añadir que es en la maquina del cliente no en server
 17º ~~~~ ---- comprobar cookies falsas, en las que se pueda haber cambiado la fecha o similar -> value como hash de la cookie(?)
 24º ~~~~ ---- mostrar la configuracion actual en la web.
 

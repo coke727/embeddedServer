@@ -1,0 +1,1 @@
+(cd /home/pi/embeddedServer && exec sudo python weatherStation.py)
