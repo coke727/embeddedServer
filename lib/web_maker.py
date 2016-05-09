@@ -4,13 +4,30 @@ import utils
 
 samples_path ="./data/"
 
+""" HTML web page builder.
+
+Build and changes the parameters of the web pages which the web server shows using diferent templates stored in the server.
+
+"""
 def create_empty(self):
+	""" Changes the home web page code for show a home page without any samples and graphics.
+	For create the empty web page this function use the emplty_web.html template stored in the templates folder.
+	"""
 	with open("html/web.html",'w+') as new_file:
 		with open("html/empty_web.html") as old_file:
 			for line in old_file:
 				new_file.write(line)
 
 def create_web(num_samples):
+	""" Create a home web page with a determinate numbre of samples.
+
+	:param num_samples: number of samples added to the html file.
+	:type num_samples: int
+
+	This function will use the web_bone.html template stored in the templates directory.
+
+	The samples will be get from the data files in the data folder getting always the last taken samples.
+	"""
 	datafiles = [f for f in listdir(samples_path) if isfile(join(samples_path, f))]
 	datafiles.sort(reverse=True)
 	
@@ -47,11 +64,23 @@ def create_web(num_samples):
 	old_file.close()
 
 def make_pages(domain):
+	""" Change the domain in the links of the web pages.
+
+	:param domain: new domain.
+	:type domain: string
+	"""
 	templates = [f for f in listdir("html/templates/") if isfile(join("html/templates/", f))]
 	for template in templates:
 		set_domain(template, domain)
 
 def set_domain(path, domain):
+	""" Change the domain in one of the htmls.
+
+	:param domain: new domain.
+	:type domain: string
+	:param path: name of the file the function will change.
+	:type path: string
+	"""
 	with file("html/templates/"+path,'r') as template:
 		with open("html/"+path, 'w+') as page:
 			for line in template:
@@ -59,6 +88,12 @@ def set_domain(path, domain):
 	template.close()
 
 def changeDeviceDomain(newip):
+	""" Change the device name in the /etc/hostname and in /etc/hosts.
+	The device domain is generated with the actual ip in order to get a domain in the FIT faculty of VUT university.
+	
+	:param newip: The new ip the function will use for generate the new domain.
+	:type domain: string.
+	"""
 	domain = ".fit.vutbr.cz"
 	hostname = "dhcpr"
 	machine_number = "000"
@@ -66,9 +101,9 @@ def changeDeviceDomain(newip):
 	ip = newip.split('.')
 
 	if (int(ip[3]) == 179):
-		hostname = "dhcpr"
-	elif (int(ip[3]) == 178):
 		hostname = "dhcps"
+	elif (int(ip[3]) == 178):
+		hostname = "dhcpr"
 	if ( int(ip[3]) < 10 ):
 		machine_number = "00"+ip[3]
 	elif (int(ip[3]) < 100):

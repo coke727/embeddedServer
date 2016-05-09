@@ -1,0 +1,98 @@
+\select@language {czech}
+\contentsline {chapter}{\numberline {1}Introduction}{2}{chapter.1}
+\contentsline {chapter}{\numberline {2}Aim of the project}{3}{chapter.2}
+\contentsline {chapter}{\numberline {3}Metodology}{4}{chapter.3}
+\contentsline {section}{\numberline {3.1}Tools}{4}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}Git}{4}{subsection.3.1.1}
+\contentsline {subsection}{\numberline {3.1.2}Sublime Text}{4}{subsection.3.1.2}
+\contentsline {subsection}{\numberline {3.1.3}Deamons}{4}{subsection.3.1.3}
+\contentsline {subsection}{\numberline {3.1.4}File configs}{4}{subsection.3.1.4}
+\contentsline {section}{\numberline {3.2}TDD}{4}{section.3.2}
+\contentsline {chapter}{\numberline {4}The system: Hardware}{5}{chapter.4}
+\contentsline {section}{\numberline {4.1}The Raspberry Pi}{5}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}History}{5}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}Social Importance}{5}{subsection.4.1.2}
+\contentsline {subsection}{\numberline {4.1.3}Hardware}{5}{subsection.4.1.3}
+\contentsline {subsection}{\numberline {4.1.4}Power save works}{5}{subsection.4.1.4}
+\contentsline {section}{\numberline {4.2}The Module}{5}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Installation}{5}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}PCF8563}{5}{subsection.4.2.2}
+\contentsline {subsubsection}{Why a RTC?}{5}{section*.2}
+\contentsline {subsubsection}{How it works (Hardware)}{5}{section*.3}
+\contentsline {subsubsection}{How use it}{5}{section*.4}
+\contentsline {subsubsection}{Problems during the development}{5}{section*.5}
+\contentsline {subsection}{\numberline {4.2.3}DS18B20}{5}{subsection.4.2.3}
+\contentsline {subsubsection}{How it works (Hardware)}{5}{section*.6}
+\contentsline {subsubsection}{How use it}{5}{section*.7}
+\contentsline {chapter}{\numberline {5}The system: Software}{6}{chapter.5}
+\contentsline {section}{\numberline {5.1}The Operative System}{6}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Why raspbian lite?}{6}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}Consecuences during the develop}{6}{subsection.5.1.2}
+\contentsline {subsubsection}{Wifi setup}{6}{section*.8}
+\contentsline {subsubsection}{Components disable}{6}{section*.9}
+\contentsline {subsection}{\numberline {5.1.3}Other alternatives}{7}{subsection.5.1.3}
+\contentsline {section}{\numberline {5.2}The languaje}{7}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Why Python?}{7}{subsection.5.2.1}
+\contentsline {subsection}{\numberline {5.2.2}Consecuences during the develop}{7}{subsection.5.2.2}
+\contentsline {subsection}{\numberline {5.2.3}Other alternatives}{7}{subsection.5.2.3}
+\contentsline {section}{\numberline {5.3}The web server}{7}{section.5.3}
+\contentsline {subsection}{\numberline {5.3.1}Why http.server}{8}{subsection.5.3.1}
+\contentsline {subsection}{\numberline {5.3.2}Consecuences during the develop}{8}{subsection.5.3.2}
+\contentsline {subsection}{\numberline {5.3.3}Other alternatives}{8}{subsection.5.3.3}
+\contentsline {subsection}{\numberline {5.3.4}Web server parts}{8}{subsection.5.3.4}
+\contentsline {chapter}{\numberline {6}The system: All together}{9}{chapter.6}
+\contentsline {section}{\numberline {6.1}Subsystem: The temperature}{9}{section.6.1}
+\contentsline {subsection}{\numberline {6.1.1}How it works}{9}{subsection.6.1.1}
+\contentsline {section}{\numberline {6.2}Subsystem: The scp}{9}{section.6.2}
+\contentsline {subsection}{\numberline {6.2.1}How it works}{10}{subsection.6.2.1}
+\contentsline {section}{\numberline {6.3}Subsystem: The web server}{10}{section.6.3}
+\contentsline {subsection}{\numberline {6.3.1}How it works}{10}{subsection.6.3.1}
+\contentsline {subsection}{\numberline {6.3.2}Endpoints}{11}{subsection.6.3.2}
+\contentsline {subsection}{\numberline {6.3.3}Data validation}{11}{subsection.6.3.3}
+\contentsline {subsection}{\numberline {6.3.4}Session implementation}{12}{subsection.6.3.4}
+\contentsline {section}{\numberline {6.4}Web application}{12}{section.6.4}
+\contentsline {subsection}{\numberline {6.4.1}Pages}{12}{subsection.6.4.1}
+\contentsline {subsubsection}{Home}{12}{section*.10}
+\contentsline {subsubsection}{Login}{12}{section*.11}
+\contentsline {subsubsection}{Configuration}{12}{section*.12}
+\contentsline {subsubsection}{Error Page}{13}{section*.13}
+\contentsline {subsection}{\numberline {6.4.2}Scripts}{13}{subsection.6.4.2}
+\contentsline {subsubsection}{configuration.js}{13}{section*.14}
+\contentsline {subsubsection}{chart.js}{13}{section*.15}
+\contentsline {subsection}{\numberline {6.4.3}Styles}{13}{subsection.6.4.3}
+\contentsline {subsubsection}{Responsive}{14}{section*.16}
+\contentsline {subsubsection}{The style sheet}{14}{section*.17}
+\contentsline {subsection}{\numberline {6.4.4}Libraries}{14}{subsection.6.4.4}
+\contentsline {section}{\numberline {6.5}Directories}{14}{section.6.5}
+\contentsline {subsection}{\numberline {6.5.1}Logs}{14}{subsection.6.5.1}
+\contentsline {subsection}{\numberline {6.5.2}Data}{14}{subsection.6.5.2}
+\contentsline {subsection}{\numberline {6.5.3}Config}{15}{subsection.6.5.3}
+\contentsline {subsection}{\numberline {6.5.4}CSS}{15}{subsection.6.5.4}
+\contentsline {subsection}{\numberline {6.5.5}HTML}{15}{subsection.6.5.5}
+\contentsline {subsection}{\numberline {6.5.6}js}{15}{subsection.6.5.6}
+\contentsline {subsection}{\numberline {6.5.7}lib}{15}{subsection.6.5.7}
+\contentsline {subsection}{\numberline {6.5.8}scripts}{15}{subsection.6.5.8}
+\contentsline {section}{\numberline {6.6}Models}{15}{section.6.6}
+\contentsline {section}{\numberline {6.7}Power saving modes}{15}{section.6.7}
+\contentsline {subsection}{\numberline {6.7.1}Why?}{16}{subsection.6.7.1}
+\contentsline {subsection}{\numberline {6.7.2}Description}{16}{subsection.6.7.2}
+\contentsline {subsection}{\numberline {6.7.3}When}{16}{subsection.6.7.3}
+\contentsline {subsection}{\numberline {6.7.4}PM0}{17}{subsection.6.7.4}
+\contentsline {subsection}{\numberline {6.7.5}PM1}{17}{subsection.6.7.5}
+\contentsline {subsection}{\numberline {6.7.6}PM2}{17}{subsection.6.7.6}
+\contentsline {subsection}{\numberline {6.7.7}PM3}{18}{subsection.6.7.7}
+\contentsline {subsection}{\numberline {6.7.8}Another not implemented actions for decrease power consumption}{19}{subsection.6.7.8}
+\contentsline {section}{\numberline {6.8}Life cicle}{19}{section.6.8}
+\contentsline {subsection}{\numberline {6.8.1}Boot script}{19}{subsection.6.8.1}
+\contentsline {subsection}{\numberline {6.8.2}PM change}{19}{subsection.6.8.2}
+\contentsline {section}{\numberline {6.9}Complementary work}{19}{section.6.9}
+\contentsline {subsection}{\numberline {6.9.1}Setup script}{19}{subsection.6.9.1}
+\contentsline {subsection}{\numberline {6.9.2}SCP remote control}{19}{subsection.6.9.2}
+\contentsline {subsection}{\numberline {6.9.3}User manual}{19}{subsection.6.9.3}
+\contentsline {subsection}{\numberline {6.9.4}Installation manual}{19}{subsection.6.9.4}
+\contentsline {chapter}{\numberline {7}Real world uses}{20}{chapter.7}
+\contentsline {chapter}{\numberline {8}Conclusions}{21}{chapter.8}
+\contentsline {chapter}{P\IeC {\v r}\IeC {\'\i }lohy}{22}{section*.18}
+\contentsline {section}{Seznam p\IeC {\v r}\IeC {\'\i }loh}{23}{section*.19}
+\ttl@starttoc {chapters@1}
+\contentsfinish 

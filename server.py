@@ -27,23 +27,53 @@ configuration_path = "./html/configuration.html"
 samples_show = 0
 store_data = False
 cookie_storage = CookieStorage()
+domain = utils.getConfiguration("domain")
 
-#This class will handles any incoming request from the browser 
+"""
+Implementation of the web server. This web server provides a public web page where are display the samples taken by the device and 
+also provides a configuration page protected by a login page where user can change the device configurations
+like power saving mode, time between each sample taken, size of the data files, scp target address and the number of samples shown
+in the public part of the web page.
+"""
+ 
 class myHandler(BaseHTTPRequestHandler):
+	"""This class handle the HTTP income request and change the configurations in the device with the data provided.
+
+	"""
 
 	def setPowerSavingModeNormal(self):
+		""" Change the actual power saving mode for the normal power mode.
+
+		This mode activate Wifi interface, wake up the http server if its down and delete the contab of 2 and 3 mode if it exist.
+
+		.. warning:: This mode activate all the disabled hardware parts. In this mode the battery will be consumed faster.
+		"""
 		global configuration_path
 		system("sudo pmnormal")
 		configuration_path = './html/configuration.html'
 		utils.remove_crontab()
 
 	def setPowerSavingMode1(self):
+		""" Change the actual power saving mode for the first power mode.
+
+		This mode activate Wifi interface, wake up the http server if its down and delete the contab of 2 and 3 mode if it exist.
+		Also this mode downclock the cpu frequency. This configuration will reduce the cpu heat and a bit of the battery consume.
+
+		"""
 		global configuration_path
 		system("sudo pm1")
 		configuration_path = './html/configuration_mode1.html'
 		utils.remove_crontab()
 
 	def answerPost(self, path, code):
+		""" Answer HTTP post request.
+
+		:param path: the first value
+        :param code: the first value
+        :type path: string
+        :type code: int
+
+		"""
 		f = open(path)
 		self.send_response(code)
 		self.send_header('Content-type','text/html')
@@ -51,8 +81,19 @@ class myHandler(BaseHTTPRequestHandler):
 		self.wfile.write(f.read())
 		f.close()
 
-	#Handler for the GET requests
 	def do_GET(self):
+		""" Handles HTTP GET request.
+
+			The paths of the webpage are:
+			* / with the home page
+			* /configuration private part of the web, it is needed a session for enter in the page.
+			* /login
+
+			The allow file types of the files requested to this server are:
+			* JavaScript
+			* html
+			* css
+		"""
 		if self.path=="/":
 			global samples_show
 			if (samples_show == 0):
@@ -96,6 +137,36 @@ class myHandler(BaseHTTPRequestHandler):
 			self.send_error(404,'File Not Found: %s' % self.path)
 
 	def do_POST(self):
+		""" Handles the HTTP POST request.
+
+		The POST endpoints are:
+		* /login
+		When a post is made to login the server check if the hashes of the login data matchs the hashes of the user and password stored in the server.
+		If the data match the server create a session with a cookie which still alive for 1200 seconds. Else the server will redirect to a error page.
+		* /configuration
+		First the server will check if the data type is correct, then it will check if the values are in the permited ranges and after that it will change the configuration.
+		This endpoint change the number of samples shown in the home page, the frequency of the temperature sensor and the size of the dara files stored in the device.
+		* /scp
+		After check the session and the data type the server will set the scp target address and start the scp daemon. If the checkbox is mark, the server will store the configuration of the scp.
+		* /pmnormal handles post to set power saving mode normal
+		First the server will check if the session is ok, then it will set up the normal power saving mode.
+		* /pm1 handles post to set power saving mode 1
+		First the server will check if the session is ok, then it will set up the first power saving mode.
+		* /pm2_multiple handles post to set power saving mode 2 in the advanced formulary.
+		After check the session and the data the server will set up the second power mode and will write the crontab which fits the schedule created by the user.
+		* /pm2_one handles post to set power saving mode 2 with one interval for all days.
+		After check the session and the data the server will set up the second power mode and will write the crontab which fits the schedule created by the user.
+		* /pm2_eachday handles post to set power saving mode 2 with one different every day.
+		After check the session and the data the server will set up the second power mode and will write the crontab which fits the schedule created by the user.
+		* /pm3_multiple handles post to set power saving mode 3 in the advanced formulary.
+		After check the session and the data the server will set up the third power mode and will write the crontab which fits the schedule created by the user.
+		* /pm3_one post to set power saving mode 3 with one interval for all days.
+		After check the session and the data the server will set up the third power mode and will write the crontab which fits the schedule created by the user.
+		* /pm3_eachday handles post to set power saving mode 3 with one different every day.
+		After check the session and the data the server will set up the third power mode and will write the crontab which fits the schedule created by the user.
+
+
+		"""
 		global configuration_path
 
 		if(self.path == '/login'):
@@ -115,7 +186,7 @@ class myHandler(BaseHTTPRequestHandler):
 				c = Cookie.SimpleCookie()
 				hash_object = hashlib.md5(str(datetime.now()).encode())
 				c['cookietemp'] = str(hash_object.hexdigest())
-				c['cookietemp']['domain'] = "localhost"
+				c['cookietemp']['domain'] = self.domain
 				c['cookietemp']['expires'] = 1200
 				c['cookietemp']['path'] = "/"
 				c['cookietemp']['httponly'] = "true"
@@ -153,10 +224,17 @@ class myHandler(BaseHTTPRequestHandler):
 					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
 				elif not re.match("^[0-9]+$", form["websamples"].value):
 					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+				elif not re.match("^[0-9]+$ | ^-[0-9]+$", form["error"].value):
+					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
 				else:
 					if( utils.isInt( form["websamples"].value ) and int( form["websamples"].value ) > 0 ):
 						samples_show = int(form["websamples"].value)
 						utils.setConfiguration("samples_show" , samples_show)
+					else:
+						isDataCorrect = False
+
+					if( utils.isInt( form["error"].value ) and int( form["error"].value ) > 0 ):
+						utils.setConfiguration("sensor_error" , int(form["error"].value))
 					else:
 						isDataCorrect = False
 

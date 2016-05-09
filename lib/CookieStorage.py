@@ -9,6 +9,11 @@ class CookieStorage(object):
 	#Check if cookie is stored in server.
 	#TODO comprobar que se eliminan correctamente.
 	def check_cookie( self, cookie ):
+		""" Check if the cookie exist
+
+		:return: true or False
+		:rtype: boolean
+		"""
 		for c in self.cookies:
 			if(c[0]["cookietemp"].value == cookie["cookietemp"].value):
 				return True
