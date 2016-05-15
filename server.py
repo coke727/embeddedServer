@@ -27,7 +27,6 @@ configuration_path = "./html/configuration.html"
 samples_show = 0
 store_data = False
 cookie_storage = CookieStorage()
-domain = utils.getConfiguration("domain")
 
 """
 Implementation of the web server. This web server provides a public web page where are display the samples taken by the device and 
@@ -186,7 +185,7 @@ class myHandler(BaseHTTPRequestHandler):
 				c = Cookie.SimpleCookie()
 				hash_object = hashlib.md5(str(datetime.now()).encode())
 				c['cookietemp'] = str(hash_object.hexdigest())
-				c['cookietemp']['domain'] = self.domain
+				c['cookietemp']['domain'] = utils.getConfiguration("domain")
 				c['cookietemp']['expires'] = 1200
 				c['cookietemp']['path'] = "/"
 				c['cookietemp']['httponly'] = "true"
@@ -291,6 +290,8 @@ class myHandler(BaseHTTPRequestHandler):
 						scpfile.write(form["port"].value+"\n")
 						scpfile.write(form["password"].value+"\n")
 					scpfile.close()
+				else:
+					system("sudo rm ./config/scp")
 
 				#Create scp task.
 				#TODO encriptar datos que se pasan al script (?)

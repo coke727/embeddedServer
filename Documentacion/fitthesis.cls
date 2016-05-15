@@ -450,3 +450,30 @@ Práce je chráněna autorským zákonem a její užití bez udělení oprávně
 \endinput
 %%
 %% End of file `fitthesis.cls'.
+
+\usepackage{xcolor}
+
+\usepackage{fancyvrb}
+
+\usepackage[justification=centering]{caption}
+
+\usepackage{listingsutf8}
+\lstdefinestyle{custom}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=single,
+  xleftmargin=\parindent,
+  xrightmargin=\parindent,
+  tabsize=2,
+  escapeinside={\%*}{*)},
+  showstringspaces=false,
+  numbers=left,
+  morekeywords={cudaStream_t,cudaEvent_t},
+  language=C,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+  inputencoding=utf8/latin1
+}

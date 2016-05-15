@@ -40,6 +40,16 @@ backup_samples_path = "./data/backup/"
 log_path = "./logs/scplog.txt"
 
 def createSSHClient(server, port, user, password):
+	""" Create a client for a SSH connection.
+	:param server: address of the target machine.
+	:type server: string
+	:param port: port where connect with the target machine.
+	:type port: int
+	:param user: user of the target machine.
+	:type user: string
+	:param password: password for the target machine.
+	:type password: string
+	"""
 	client = paramiko.SSHClient()
 	client.load_system_host_keys()
 	client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -47,6 +57,15 @@ def createSSHClient(server, port, user, password):
 	return client
 
 def get_arguments():
+	""" Get the arguments from the command line and then ask user for password.
+
+	The parameters that this deamon uses are:
+	* Address: address to the target machine.
+	* User: user of the target machine.
+	* Password: password for the target machine.
+	* Port: port for the SCP connection.
+	* Directory: directory in the target machine where we want to store the samples.
+	"""
 	global address
 	global user
 	global password
@@ -65,6 +84,8 @@ def get_arguments():
 	#print ("frec %s addr %s user %s port %s dir %s pass %s" % (frequency, address, user, port, directory, password))
 
 def usage():
+	""" Print in the shell the right usage of this daemon.
+	"""
 	print("USAGE: python %s %s|%s|%s|%s <address> <user> <port> <directory>" % (sys.argv[0], COMMAND_START, COMMAND_STOP, COMMAND_RESTART, COMMAND_RESTORE))
 
 # Invalid executions
@@ -75,6 +96,10 @@ if len(sys.argv) < 2 or sys.argv[1] not in [COMMAND_START, COMMAND_STOP, COMMAND
 #every time a send a scp file i made a backup, when i want to see what files i need to send i compare the samples and the
 #backup directories files.
 def getFilesToSend():
+	""" Get the files which weren't send to the target machine sorted from the newest one to the oldest one.
+	:return: array with the names of the files wich weren't send.
+	:rtype: string[]
+	"""
 	try:
 		with open("./config/sendedFiles", 'r') as file:
 			sendedFiles = [x.strip('\n') for x in file.readlines()]
@@ -90,20 +115,33 @@ def getFilesToSend():
 	return files_to_send
 
 def createBackup(file_name):
+	""" Create a copy of the selected data file in the backup directory.
+	:param file_name: name of the file to backup.
+	:type file_name: string
+	"""
 	command = 'cp -a ' + samples_path + file_name + ' ' + backup_samples_path
 	system(command)
 	log('Created backup of ' + file_name)
 
 def turnWifiOn():
+	""" Turn on the wifi.
+	"""
 	system('sudo ifup wlan0')
 	log('Turn on wifi for send data.')
 	sleep(5)
 
 def turnWifiOff():
+	""" Turn off the wifi.
+	"""
 	system('sudo ifdown wlan0')
 	log('Turn off wifi after send data.')
 
 def mark_as_send(file_name):
+	""" Write the chosen file in the sendedFiles configuration file marking it as read if the data file is full.
+
+	:param file_name: name of the file to mark as send.
+	:type file_name: string
+	"""
 	file_size = int(utils.getConfiguration('file_size'))
 	with open(samples_path+file_name) as datafile:
 			samples_in_file = enumerate(datafile)
@@ -115,11 +153,18 @@ def mark_as_send(file_name):
 		file.close
 
 def log(msg):
+	""" Create a log int the scp daemon log file.
+	:param msg: menssage to store.
+	:type msg: string
+	"""
 	with open(log_path, 'a+') as log:
 		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + str(msg) + '\n')
 	log.close()
 
 def count():
+	""" Infinite loop executed by this daemon. In every iteration the daemon gets the files which are not sended to the target
+	machine and send it to the target machine marking it as sended in the configuration file. The daemon will turn on the wifi if needed.
+	"""
 	while 1:
 		frequency = int(utils.getConfiguration('frequency_scp'))
 		powermode = int(utils.getConfiguration('powermode'))

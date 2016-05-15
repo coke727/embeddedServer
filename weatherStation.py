@@ -13,28 +13,39 @@ import utils
 log_path = "./logs/weatherstationlog.txt"
 
 def ip_configuration():
+	""" This method detect if the ip of the device changed since the last exection. If the IP is the same the method will finish,
+	else the method will save the new IP, change the host name and the domain in the device and change the static links in the html files in 
+	order to keep the web page available inside the VUT university network.
+	"""
 	ip = "localhost"
 	newip = "localhost"
+	sleep(5) #Wait for get IP
+	try:
+		newip = subprocess.Popen(["hostname", "-I"], stdout=subprocess.PIPE).communicate()[0].split()
+		newip = newip[0]
+	except:
+		print "I couldn't get IP"
 	
 	try:
 		with open("./config/ip", 'r') as ipfile:
 			ip = ipfile.read().strip()
 		ipfile.close()
-
-		newip = subprocess.Popen(["hostname", "-I"], stdout=subprocess.PIPE).communicate()[0].split()
-		if (newip[0] != ip):
+		if (newip != ip):
 			utils.log(log_path,"IP changed. New ip is " + newip)
-			system('echo "'+ newip[0] +'" > ./config/ip')
-			newDomain = web_maker.changeDeviceDomain(newip[0])
+			system('echo "'+ newip +'" > ./config/ip')
+			newDomain = web_maker.changeDeviceDomain(newip)
 			utils.log(log_path, "Device domain changed to: " + newDomain)
 	except:
-		newip = subprocess.Popen(["hostname", "-I"], stdout=subprocess.PIPE).communicate()[0].split()
-		system('echo "'+ newip[0] +'" > ./config/ip')
+		system('echo "'+ newip +'" > ./config/ip')
 		utils.log(log_path, "Ip file doesn't exist, generating one.")
-		web_maker.changeDeviceDomain(newip[0])
+		web_maker.changeDeviceDomain(newip)
 		utils.log(log_path, "Device domain changed to: " + utils.getConfiguration("domain"))
 
 def isPowermode2_on():
+	""" Detect if the power mode 2, if it is enabled check if its inside the interval where the wifi has to be disabled or if it is outside the interval.
+	:return: True if the device is inside a second power mode interval and False if not.
+	:rtype: boolean
+	"""
 	with open("./crons/pm2.tab", 'r') as cron:
 		day_number = datetime.datetime.today().weekday()
 		i = 0
@@ -55,6 +66,10 @@ def isPowermode2_on():
 
 
 def powerMode_configuration():
+	""" This method detect the actual power saving mode in the configuration files and set up the right power saving mode.
+	
+	By default, if the configuration doesn't exist the first power saving mode will be enabled.
+	"""
 	powermode = 0
 
 	try:
@@ -99,6 +114,8 @@ def powerMode_configuration():
 		system("pm1")
 
 def scp_configuration():
+	""" Check if exist a configuration file for the scp, if it exist wake up the scp daemon with the data stored in the configuration file.
+	"""
 	try:
 		with open("./config/scp", 'r') as scpfile:
 			user = scpfile.next().strip()
@@ -115,6 +132,9 @@ def scp_configuration():
 		utils.log(log_path, "Scp isn't set up. Not starting scp daemon.")
 
 def temperature_configuration():
+	""" Check if the configurations of the temperature daemon exists. If there is no configuration file it will create a new ones with default values.
+	After that the methon will wake up the temperature daemon.
+	"""
 	try:
 		with open("./config/frequency_temp", 'r') as tempfile:
 			frequency = tempfile.next().strip()

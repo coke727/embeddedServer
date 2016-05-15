@@ -2,6 +2,8 @@ import re
 import hashlib
 from crontab import CronTab
 from crontabs import CronTabs
+import time
+import datetime
 
 """ Utility module.
 
@@ -35,7 +37,7 @@ def log(log_path, msg):
 	:type msg: string
 	"""
 	with open(log_path, 'a+') as log:
-		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + msg + '\n')
+		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + str(msg) + '\n')
 	log.close()
 
 def remove_overlap( intervals ): #sol by http://www.geeksforgeeks.org/merging-intervals/
@@ -203,7 +205,7 @@ def validateInterval_multiple(form):
 
 #Login validation.
 def check_login( login, password ):
-	""" Check if the login data input by the user are right.
+	""" Check if the hash of the login data input by the user match with the data hashes stored in the device.
 
 	:param login: login name input by user.
 	:type login: string
@@ -229,11 +231,19 @@ def check_login( login, password ):
 # -------------------------- #
 
 def remove_crontab():
-		cron = CronTab(user=crontab_user)
-		cron.remove_all()
-		cron.write_to_user( user=True )
+	""" Removes the actual crontab.
+	"""
+	cron = CronTab(user=crontab_user)
+	cron.remove_all()
+	cron.write_to_user( user=True )
 
 def create_crontab( form, isAdvanced ):
+	""" Check if the data in given by the user is correct, store it in variables and then create a crontab with it.
+	:param form: form with the data given by the user.
+	:param isAdvanced: if the data was written int he each day form or in the advanced form.
+	:type isAdvanced: boolean
+	:type form: String[]
+	"""
 	#Parse and validation of the form data.
 	if(isAdvanced):
 		monday = remove_overlap(getIntervalArray(form["monday"].value))
@@ -259,6 +269,13 @@ def create_crontab( form, isAdvanced ):
 
 
 def write_crontab( week, isAdvanced):
+	""" Write the crontab in the system with the data provided
+	:param week: time intervals for enter in mode 2 for each day.
+	:type week: (int, int), (int, int)[]
+	:param isAdvanced: if the data was written int he each day form or in the advanced form.
+	:type isAdvanced: boolean
+	"""
+
 	cron = CronTab(user=crontab_user)
 	
 	if(isAdvanced):
@@ -294,6 +311,10 @@ def write_crontab( week, isAdvanced):
 	cron.write_to_user( user=True )
 
 def crontab_exist():
+	""" Detect if exist a crontab configuration file in the system.
+	:return: True if exist and False if not.
+	:rtype: boolean 
+	"""
 	try:
 		with open("./config/pm2.tab", 'r') as cron:
 			log("Using actual crontab.")
