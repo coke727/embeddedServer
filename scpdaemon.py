@@ -105,7 +105,7 @@ def getFilesToSend():
 			sendedFiles = [x.strip('\n') for x in file.readlines()]
 		file.close()
 	except:
-		log('No files in sendedFiles configuration.')
+		utils.log(log_path, 'No files in sendedFiles configuration.')
 		sendedFiles = []
 	
 	datafiles = [f for f in listdir(samples_path) if isfile(join(samples_path, f))]
@@ -121,20 +121,20 @@ def createBackup(file_name):
 	"""
 	command = 'cp -a ' + samples_path + file_name + ' ' + backup_samples_path
 	system(command)
-	log('Created backup of ' + file_name)
+	utils.log(log_path, 'Created backup of ' + file_name)
 
 def turnWifiOn():
 	""" Turn on the wifi.
 	"""
 	system('sudo ifup wlan0')
-	log('Turn on wifi for send data.')
+	utils.log(log_path, 'Turn on wifi for send data.')
 	sleep(5)
 
 def turnWifiOff():
 	""" Turn off the wifi.
 	"""
 	system('sudo ifdown wlan0')
-	log('Turn off wifi after send data.')
+	utils.log(log_path,'Turn off wifi after send data.')
 
 def mark_as_send(file_name):
 	""" Write the chosen file in the sendedFiles configuration file marking it as read if the data file is full.
@@ -152,15 +152,6 @@ def mark_as_send(file_name):
 			file.write(file_name+"\n")
 		file.close
 
-def log(msg):
-	""" Create a log int the scp daemon log file.
-	:param msg: menssage to store.
-	:type msg: string
-	"""
-	with open(log_path, 'a+') as log:
-		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + str(msg) + '\n')
-	log.close()
-
 def count():
 	""" Infinite loop executed by this daemon. In every iteration the daemon gets the files which are not sended to the target
 	machine and send it to the target machine marking it as sended in the configuration file. The daemon will turn on the wifi if needed.
@@ -176,7 +167,7 @@ def count():
 			ssh = createSSHClient(address, port, user, password)
 			scp = SCPClient(ssh.get_transport())
 		except:
-			log("Error trying connect with the destiny device.")
+			utils.log(log_path, "Error trying connect with the destiny device.")
 			yapdi.Daemon().kill()
 			exit()
 
@@ -186,18 +177,18 @@ def count():
 				scp.put(samples_path+datafile, directory)
 				createBackup(datafile)
 				mark_as_send(datafile)
-				log("File " + datafile + " sended to " + address)
+				utils.log(log_path, "File " + datafile + " sended to " + address)
 				if(powermode == 2 or powermode == 3):
 					turnWifiOff()
 			time.sleep(frequency * 3600)
 		except:
-			log("Error sending the files.")
+			utils.log(log_path, "Error sending the files.")
 			time.sleep(frequency * 3600)
 
 if sys.argv[1] == COMMAND_START:
 	get_arguments()
 	daemon = yapdi.Daemon(pidfile='/var/run/scp.pid')
-	log("Starting daemon.")
+	utils.log(log_path, "Starting daemon.")
 
 	# Check whether an instance is already running
 	if daemon.status():
@@ -214,12 +205,12 @@ if sys.argv[1] == COMMAND_START:
 elif sys.argv[1] == COMMAND_RESTORE:
 	with open("./config/sendedFiles", 'w+') as file:
 		print "Data about sended files cleaned."
-		log("Data about sended files cleaned.")
+		utils.log(log_path, "Data about sended files cleaned.")
 	file.close()
 
 elif sys.argv[1] == COMMAND_STOP:
 	daemon = yapdi.Daemon(pidfile='/var/run/scp.pid')
-	log("Daemon Stoped.")
+	utils.log(log_path, "Daemon Stoped.")
 
 	# Check whether no instance is running
 	if not daemon.status():

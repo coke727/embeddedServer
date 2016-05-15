@@ -19,7 +19,7 @@ def ip_configuration():
 	"""
 	ip = "localhost"
 	newip = "localhost"
-	sleep(5) #Wait for get IP
+	time.sleep(5) #Wait for get IP
 	try:
 		newip = subprocess.Popen(["hostname", "-I"], stdout=subprocess.PIPE).communicate()[0].split()
 		newip = newip[0]
@@ -67,7 +67,7 @@ def isPowermode2_on():
 
 def powerMode_configuration():
 	""" This method detect the actual power saving mode in the configuration files and set up the right power saving mode.
-	
+
 	By default, if the configuration doesn't exist the first power saving mode will be enabled.
 	"""
 	powermode = 0

@@ -124,20 +124,20 @@ def get_data_file():
 		with open(samples_path+datafiles[0]) as samples:
 			samples_in_file = len(samples.readlines())
 			if(samples_in_file >= number_samples):
-				create_empty("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt")
-				return (samples_path+"datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt", 0)
+				create_empty("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.localtime()) + ".txt")
+				return (samples_path+"datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.localtime()) + ".txt", 0)
 			else:
 				return (samples_path+datafiles[0], samples_in_file)
 	except:
-		create_empty("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt")
-		return (samples_path+"datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt", 0)
+		create_empty("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.localtime()) + ".txt")
+		return (samples_path+"datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.localtime()) + ".txt", 0)
 
 def create_empty(name):
 	""" Create a new empty data file.
 	"""
 	file = open(samples_path+name, 'w+')
 	file.close()
-	utils.log(log_path,"New data file: datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt")
+	utils.log(log_path,"New data file: datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.localtime()) + ".txt")
 
 
 def count():
@@ -156,12 +156,12 @@ def count():
 			file_path = file_data[0]
 			samples_in_file = file_data[1]
 		temp_c = read_temp() + error
-		time_now = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())
+		time_now = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
 		try:
 			with file(file_path,'r') as original: data = original.read()
 		except:
 			utils.log(log_path,"Can't open actual data file. Skipping data file and creating new one.")
-			with file("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.gmtime()) + ".txt",'w+') as original: data = original.read()
+			with file("datafile_"+time.strftime("%y.%m.%d_%H.%M.%S", time.localtime()) + ".txt",'w+') as original: data = original.read()
 
 		with file(file_path,'w+') as modified: modified.write(str(temp_c) + "; "+ time_now+"\n" + data)
 		samples_in_file+=1

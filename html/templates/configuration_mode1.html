@@ -17,11 +17,7 @@
 	<article>
 		<div class="container">
 			<h2> Configuration options</h2>
-			<p>
-				Frequency is the time between each sample taken by the temperature sensor. The default frequency is 10 minutes.
-			</p>
 			<form method="post" action="http://localhost/configuration">
-				<p><input id="frequency" type="number" name="frequency" value="" placeholder="Frequency in minutes" min="1" required="required" title="Input for sensor frequency."></p>
 			<p>
 				The number of samples is the amount of samples in the data files stored in the device. The default number of samples is 120.
 			</p>
@@ -30,6 +26,14 @@
 				The number of samples shown in the web page. The default number of samples shown is 20.
 			</p>
 				<p><input id="websamples" type="number" name="websamples" value="" placeholder="samples number shown in the webpage" min="1" required="required" title="Input for number of samples shown in configuration."></p>
+			<p>
+				The error adjust in the sensor. It can be positive or negative in order to add or substract temperature from the samples taken. The default adjust is 0.
+			</p>
+				<p><input id="error" type="number" name="error" value="" placeholder="Adjustment of the sensor value" required="required" title="Adjustment of the sensor value."></p>
+			<p>
+				Frequency is the time between each sample taken by the temperature sensor. The default frequency is 10 minutes.
+			</p>
+				<p><input id="frequency" type="number" name="frequency" value="" placeholder="Frequency in minutes" min="1" required="required" title="Input for sensor frequency."></p>
 				<p class="submit"><input id="general" type="submit" name="commit" value="Submit"></p>
 			</form>
 		</div>

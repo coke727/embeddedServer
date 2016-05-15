@@ -37,7 +37,7 @@ def log(log_path, msg):
 	:type msg: string
 	"""
 	with open(log_path, 'a+') as log:
-		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime())+'] ' + str(msg) + '\n')
+		log.write('['+time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())+'] ' + str(msg) + '\n')
 	log.close()
 
 def remove_overlap( intervals ): #sol by http://www.geeksforgeeks.org/merging-intervals/
