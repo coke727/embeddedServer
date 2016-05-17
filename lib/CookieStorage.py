@@ -17,13 +17,17 @@ class CookieStorage(object):
 		:return: True if all is correct or False if not
 		:rtype: boolean
 		"""
-		for c in self.cookies:
-			if(c[0]["cookietemp"].value == cookie["cookietemp"].value):
-				return True
-			else: #Check if cookie is alive
-				if( c[1] < datetime.now()):
-					self.cookies.remove(c)
-		return False
+		try:
+			for c in self.cookies:
+				if(c[0]["cookietemp"].value == cookie["cookietemp"].value):
+					return True
+				else: #Check if cookie is alive
+					if( c[1] < datetime.now()):
+						self.cookies.remove(c)
+			return False
+		except:
+			self.cookies = []
+			return False
 
 	def store_cookie( self, cookie ):
 		""" Stores cookie in the cookie storage.
