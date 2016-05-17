@@ -98,7 +98,10 @@ def get_arguments():
 	frequency = int(utils.getConfiguration("frequency_temp"))
 	number_samples = int(utils.getConfiguration("file_size"))
 
-	utils.log(log_path,"Get arguments: Frequency "+ str(frequency) +" and Number Samples " + str(number_samples) + " and Error: " + error)
+	if (frequency == 0) : frequency = 10
+	if (number_samples == 0) : number_samples = 120
+
+	utils.log(log_path,"Get arguments: Frequency "+ str(frequency) +" and Number Samples " + str(number_samples) + " and Error: " + str(error))
 
 def usage():
 	""" Print in the shell the right usage of this daemon.
@@ -150,6 +153,7 @@ def count():
 	file_path = file_data[0]
 
 	while 1:
+		get_arguments()
 		if (samples_in_file >= number_samples):
 			utils.log(log_path,"File completed: " + str(samples_in_file) + " samples with limit "+ str(number_samples))
 			file_data = get_data_file()

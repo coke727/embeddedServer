@@ -78,7 +78,6 @@ def get_arguments():
 		port = int(sys.argv[4])
 		directory = sys.argv[5]
 		password = raw_input()
-		print ("addr %s user %s port %s dir %s pass %s" % (address, user, port, directory, password))
 	except:
 		usage()
 	#print ("frec %s addr %s user %s port %s dir %s pass %s" % (frequency, address, user, port, directory, password))
