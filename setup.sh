@@ -21,6 +21,17 @@ if [ $# -gt 0 ]; then
 		echo "[Warning!] Weather station code already in this directory. I will use the code already in the device, if it is not desirable move the code from this directory and execute this script another time."
 	fi
 
+	if [ -d $ACTUAL"/YapDi"]; then
+		echo "Downloading YapDi from Github."
+		git clone https://github.com/kasun/YapDi.git
+		sudo python $ACTUAL/YapDi setup.py install
+		sudo rm -rf $ACTUAL/YapDi
+	else
+		echo "[Warning!] YapDi already in this directory. I will use the code already in the device, if it is not desirable move the code from this directory and execute this script another time."
+		sudo python $ACTUAL/YapDi setup.py install
+	fi
+	
+
 	#Wpa_supplicant setup
 	echo "Configuration eduroam network with wpa_supplicant."
 	sudo cat $ACTUAL/embeddedServer/wpa_supplicant >> /etc/wpa_supplicant/wpa_supplicant.conf
