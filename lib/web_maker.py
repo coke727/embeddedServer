@@ -13,8 +13,8 @@ def create_empty(self):
 	""" Changes the home web page code for show a home page without any samples and graphics.
 	For create the empty web page this function use the emplty_web.html template stored in the templates folder.
 	"""
-	with open("html/web.html",'w+') as new_file:
-		with open("html/empty_web.html") as old_file:
+	with open("web/html/web.html",'w+') as new_file:
+		with open("web/html/empty_web.html") as old_file:
 			for line in old_file:
 				new_file.write(line)
 
@@ -31,8 +31,8 @@ def create_web(num_samples):
 	datafiles = [f for f in listdir(samples_path) if isfile(join(samples_path, f))]
 	datafiles.sort(reverse=True)
 	
-	with open("html/web.html",'w+') as new_file:
-		with open("html/web_bone.html") as old_file:
+	with open("web/html/web.html",'w+') as new_file:
+		with open("web/html/web_bone.html") as old_file:
 			for line in old_file:
 				new_file.write(line)
 		try:
@@ -69,7 +69,7 @@ def make_pages(domain):
 	:param domain: new domain.
 	:type domain: string
 	"""
-	templates = [f for f in listdir("html/templates/") if isfile(join("html/templates/", f))]
+	templates = [f for f in listdir("web/html/templates/") if isfile(join("web/html/templates/", f))]
 	for template in templates:
 		set_domain(template, domain)
 
@@ -81,8 +81,8 @@ def set_domain(path, domain):
 	:param path: name of the file the function will change.
 	:type path: string
 	"""
-	with file("html/templates/"+path,'r') as template:
-		with open("html/"+path, 'w+') as page:
+	with file("web/html/templates/"+path,'r') as template:
+		with open("web/html/"+path, 'w+') as page:
 			for line in template:
 				page.write(line.replace('localhost', domain))
 	template.close()

@@ -2,12 +2,6 @@
 
 ACTUAL=$(pwd)
 
-#Wpa_supplicant setup
-echo "Configuration eduroam network with wpa_supplicant."
-sudo cp -a $ACTUAL/embeddedServer/scripts/wpa_supplicant.conf /etc/wpa_supplicant/
-sudo wpa_supplicant -Dwext -iwlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf &
-sudo dhcpcd wlan0 &
-
 sudo apt-get update
 sudo apt-get install git
 sudo apt-get install python-pip python-crypto python-dev libgmp-dev cpufrequtils
@@ -17,10 +11,10 @@ sudo pip install cryptography
 sudo pip install paramiko
 
 #Download YapDi libary for daemons.
-echo "Downloading YapDi from Github."
-sudo git clone https://github.com/kasun/YapDi.git
-sudo python $ACTUAL/YapDi setup.py install
-sudo rm -rf $ACTUAL/YapDi
+#echo "Downloading YapDi from Github."
+#sudo git clone https://github.com/kasun/YapDi.git
+#sudo python $ACTUAL/YapDi setup.py install
+#sudo rm -rf $ACTUAL/YapDi
 
 #Download project
 echo "Downloading weather station code from Github."
@@ -40,7 +34,7 @@ if grep -q boot.sh "/etc/profile"; then
 else
 	echo "Adding weather station to /etc/profile"
 	sudo echo "" >> /etc/profile
-	sudo echo -n "sudo sh "$ACTUAL"/embeddedServer/scripts/boot.sh" >> /etc/profile
+	sudo echo -n "sh "$ACTUAL"/embeddedServer/scripts/boot.sh" >> /etc/profile
 	sudo echo -e "\n" >> /etc/profile
 	fi
 
