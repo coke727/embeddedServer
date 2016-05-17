@@ -112,10 +112,13 @@ def changeDeviceDomain(newip):
 		machine_number = ip[3]
 
 	make_pages(hostname+machine_number+domain)
+	utils.setConfiguration("domain", hostname+machine_number+domain)
+	
 	system('sudo echo "' +hostname+machine_number+ '" > /etc/hostname')
 	system('sudo echo -e "' +newip+ '\t' +hostname+machine_number+domain +'\t'+ hostname+machine_number+'\n" >> /etc/hosts')
 	system('sudo /etc/init.d/hostname.sh')
+
 	system('sudo reboot')
 
-	utils.setConfiguration("domain", hostname+machine_number+domain)
+	
     
