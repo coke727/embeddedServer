@@ -46,7 +46,7 @@ def isPowermode2_on():
 	:return: True if the device is inside a second power mode interval and False if not.
 	:rtype: boolean
 	"""
-	with open("./crons/pm2.tab", 'r') as cron:
+	with open("./conf/pm2.tab", 'r') as cron:
 		day_number = datetime.datetime.today().weekday()
 		i = 0
 		while (i <= day_number):

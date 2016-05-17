@@ -23,7 +23,7 @@ import utils
 from weatherStation import ip_configuration
 
 PORT_NUMBER = 80
-configuration_path = "./html/configuration.html"
+configuration_path = "./web/html/configuration.html"
 samples_show = 0
 store_data = False
 cookie_storage = CookieStorage()
@@ -49,7 +49,7 @@ class myHandler(BaseHTTPRequestHandler):
 		"""
 		global configuration_path
 		system("sudo pmnormal")
-		configuration_path = './html/configuration.html'
+		configuration_path = './web/html/configuration.html'
 		utils.remove_crontab()
 
 	def setPowerSavingMode1(self):
@@ -61,7 +61,7 @@ class myHandler(BaseHTTPRequestHandler):
 		"""
 		global configuration_path
 		system("sudo pm1")
-		configuration_path = './html/configuration_mode1.html'
+		configuration_path = './web/html/configuration_mode1.html'
 		utils.remove_crontab()
 
 	def answerPost(self, path, code):
@@ -98,14 +98,14 @@ class myHandler(BaseHTTPRequestHandler):
 			if (samples_show == 0):
 				samples_show = int(utils.getConfiguration("samples_show"))
 			create_web(samples_show)
-			self.path="html/web.html"
+			self.path="web/html/web.html"
 		if self.path=="/configuration":
 			if (cookie_storage.check_session(self.headers)):
 				self.path = configuration_path
 			else:
-				self.path = "html/login.html"
+				self.path = "web/html/login.html"
 		if self.path=="/login":
-			self.path="html/login.html"
+			self.path="web/html/login.html"
 
 		try:
 			#Check the file extension required and
@@ -196,11 +196,11 @@ class myHandler(BaseHTTPRequestHandler):
 				self.send_header('Set-Cookie', c.output(attrs=['path', 'expires'], header="Cookie:"))
 				
 				self.end_headers()
-				f = open(curdir + sep + "html/configuration.html")
+				f = open(curdir + sep + "web/html/configuration.html")
 				self.wfile.write(f.read())
 				f.close()
 			else:
-				self.answerPost(curdir + sep + "html/login-fail.html", 200)
+				self.answerPost(curdir + sep + "web/html/login-fail.html", 200)
 
 		if(self.path == '/configuration'):
 			global samples_show
@@ -218,13 +218,13 @@ class myHandler(BaseHTTPRequestHandler):
 			if (cookie_storage.check_session(self.headers)):
 				#Data validation
 				if not re.match("^[0-9]+$", form["samples"].value):
-					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 				elif not re.match("^[0-9]+$", form["frequency"].value):
-					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 				elif not re.match("^[0-9]+$", form["websamples"].value):
-					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 				elif not re.match("^[0-9]+$ | ^-[0-9]+$", form["error"].value):
-					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 				else:
 					if( utils.isInt( form["websamples"].value ) and int( form["websamples"].value ) > 0 ):
 						samples_show = int(form["websamples"].value)
@@ -249,11 +249,11 @@ class myHandler(BaseHTTPRequestHandler):
 						isDataCorrect = False
 
 					if( isDataCorrect ):
-						self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
+						self.answerPost(curdir + sep + "web/html/configuration-changed.html", 200)
 					else:
-						self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+						self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 			else:
-				self.answerPost(curdir + sep + "html/session-fail.html", 200)
+				self.answerPost(curdir + sep + "web/html/session-fail.html", 200)
 
 
 		if(self.path == '/scp'):
@@ -301,11 +301,11 @@ class myHandler(BaseHTTPRequestHandler):
 
 				#Redirect to configuration.
 				if( isDataCorrect ):
-					self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-changed.html", 200)
 				else:
-					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 			else:
-				self.answerPost(curdir + sep + "html/session-fail.html", 200)
+				self.answerPost(curdir + sep + "web/html/session-fail.html", 200)
 
 		if(self.path == '/pmnormal'):
 			#Session check
@@ -314,9 +314,9 @@ class myHandler(BaseHTTPRequestHandler):
 				print "[Power mode normal Post]"
 				self.setPowerSavingModeNormal()
 				utils.setConfiguration("powermode", "0")
-				self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
+				self.answerPost(curdir + sep + "web/html/configuration-changed.html", 200)
 			else:
-				self.answerPost(curdir + sep + "html/session-fail.html", 200)
+				self.answerPost(curdir + sep + "web/html/session-fail.html", 200)
 			
 		if(self.path == '/pm1'):
 			#Session check
@@ -325,13 +325,13 @@ class myHandler(BaseHTTPRequestHandler):
 				print "[Power mode 1 Post]"
 				self.setPowerSavingMode1()
 				utils.setConfiguration("powermode", "1")
-				self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
+				self.answerPost(curdir + sep + "web/html/configuration-changed.html", 200)
 			else:
-				self.answerPost(curdir + sep + "html/session-fail.html", 200)
+				self.answerPost(curdir + sep + "web/html/session-fail.html", 200)
 
 		if(self.path == '/pm2_multiple'):
 			if (cookie_storage.check_session(self.headers)):
-				configuration_path = './html/configuration_mode2.html'
+				configuration_path = './web/html/configuration_mode2.html'
 				#TODO elimnar datos de los otros modos
 				print "[Power mode 2 Post: Multiple intervals]"
 
@@ -345,15 +345,15 @@ class myHandler(BaseHTTPRequestHandler):
 				if(utils.validateInterval_multiple(form)):
 					utils.create_crontab(form, True)
 					utils.setConfiguration("powermode", "2")
-					self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-changed.html", 200)
 				else:
-					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 			else:
-				self.answerPost(curdir + sep + "html/session-fail.html", 200)
+				self.answerPost(curdir + sep + "web/html/session-fail.html", 200)
 
 		if(self.path == '/pm2_one'):
 			if(cookie_storage.check_session(self.headers)):
-				configuration_path = './html/configuration_mode2.html'
+				configuration_path = './web/html/configuration_mode2.html'
 				print "[Power mode 2 Post: One interval]"
 
 				#Post form recover
@@ -369,15 +369,15 @@ class myHandler(BaseHTTPRequestHandler):
 					monday = tuesday = wednesday = thursday = friday = saturday = sunday = (int(form["start"].value),int(form["end"].value))
 					utils.write_crontab([monday, tuesday, wednesday, thursday, friday, saturday, sunday], False)
 					utils.setConfiguration("powermode", "2")
-					self.answerPost(curdir + sep + "html/configuration-changed.html",200)
+					self.answerPost(curdir + sep + "web/html/configuration-changed.html",200)
 				else:
-					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 			else:
-				self.answerPost(curdir + sep + "html/session-fail.html", 200)
+				self.answerPost(curdir + sep + "web/html/session-fail.html", 200)
 
 		if(self.path == '/pm2_eachday'):
 			if (cookie_storage.check_session(self.headers)):
-				configuration_path = './html/configuration_mode2.html'
+				configuration_path = './web/html/configuration_mode2.html'
 				print "[Power mode 2 Post: Multiple intervals]"
 
 				#Post form recover
@@ -391,14 +391,14 @@ class myHandler(BaseHTTPRequestHandler):
 				if(utils.validateInterval_eachDay(form)):
 					utils.create_crontab(form, False)
 					utils.setConfiguration("powermode", "2")
-					self.answerPost(curdir + sep + "html/configuration-changed.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-changed.html", 200)
 				else:
-					self.answerPost(curdir + sep + "html/configuration-fail.html", 200)
+					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 			else:
-				self.answerPost(curdir + sep + "html/session-fail.html", 200)
+				self.answerPost(curdir + sep + "web/html/session-fail.html", 200)
 
 		if(self.path == '/pm3'):
-			configuration_path = './html/configuration_mode3.html'
+			configuration_path = './web/html/configuration_mode3.html'
 			print "[Power mode 3 Post]"
 			utils.setConfiguration("powermode", "3")
 			#TODO modo 3 -> pmsleep.sh -> depender del RTC para encender raspi antes de cada medida o en la fecha pedida por el usuario
