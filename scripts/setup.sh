@@ -10,12 +10,6 @@ sudo pip install python-crontab
 sudo pip install cryptography
 sudo pip install paramiko
 
-#Download YapDi libary for daemons.
-#echo "Downloading YapDi from Github."
-#sudo git clone https://github.com/kasun/YapDi.git
-#sudo python $ACTUAL/YapDi setup.py install
-#sudo rm -rf $ACTUAL/YapDi
-
 #Download project
 echo "Downloading weather station code from Github."
 sudo git clone https://github.com/coke727/weatherStation.git

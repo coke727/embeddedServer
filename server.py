@@ -97,6 +97,9 @@ class myHandler(BaseHTTPRequestHandler):
 			global samples_show
 			if (samples_show == 0):
 				samples_show = int(utils.getConfiguration("samples_show"))
+				if( samples_show == 0 ):
+					samples_show = 20
+					utils.setConfiguration("samples_show", samples_show)
 			create_web(samples_show)
 			self.path="web/html/web.html"
 		if self.path=="/configuration":
@@ -223,7 +226,7 @@ class myHandler(BaseHTTPRequestHandler):
 					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 				elif not re.match("^[0-9]+$", form["websamples"].value):
 					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
-				elif not re.match("^[0-9]+$ | ^-[0-9]+$", form["error"].value):
+				elif not re.match("^([0-9]+|-[0-9]+)$", form["error"].value):
 					self.answerPost(curdir + sep + "web/html/configuration-fail.html", 200)
 				else:
 					if( utils.isInt( form["websamples"].value ) and int( form["websamples"].value ) > 0 ):
@@ -232,7 +235,7 @@ class myHandler(BaseHTTPRequestHandler):
 					else:
 						isDataCorrect = False
 
-					if( utils.isInt( form["error"].value ) and int( form["error"].value ) > 0 ):
+					if( utils.isInt( form["error"].value )):
 						utils.setConfiguration("sensor_error" , int(form["error"].value))
 					else:
 						isDataCorrect = False

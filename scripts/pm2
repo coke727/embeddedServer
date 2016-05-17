@@ -1,4 +1,6 @@
 #!/bin/bash
 sudo ifdown wlan0
+sudo /opt/vc/bin/tvservice -o
+echo 0x0 > /sys/devices/platform/bcm2708_usb/buspower
 sudo cpufreq-set -g powersave
 ps -ef | grep 'python server.py' | grep -v grep | awk '{print $2}' | xargs kill

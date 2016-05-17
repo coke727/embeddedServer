@@ -1,3 +1,6 @@
 #!/bin/bash
 sudo ifup wlan0
+sudo /opt/vc/bin/tvservice -p 	
+echo 0x1 > /sys/devices/platform/bcm2708_usb/buspower
+/etc/init.d/networking start
 sudo cpufreq-set -g ondemand
