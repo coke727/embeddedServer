@@ -18,14 +18,14 @@ sudo pip install paramiko
 
 #Download project
 echo "Downloading weather station code from Github."
-sudo git clone https://github.com/coke727/embeddedServer.git
+sudo git clone https://github.com/coke727/weatherStation.git
 
 #Creating power saving modes script folder
 mkdir /home/$USER/bin
-cp -a $ACTUAL/embeddedServer/scripts/pmnormal /home/$USER/bin
-cp -a $ACTUAL/embeddedServer/scripts/pm1 /home/$USER/bin
-cp -a $ACTUAL/embeddedServer/scripts/pm2 /home/$USER/bin
-cp -a $ACTUAL/embeddedServer/scripts/pm3 /home/$USER/bin
+cp -a $ACTUAL/weatherStation/scripts/pmnormal /home/$USER/bin
+cp -a $ACTUAL/weatherStation/scripts/pm1 /home/$USER/bin
+cp -a $ACTUAL/weatherStation/scripts/pm2 /home/$USER/bin
+cp -a $ACTUAL/weatherStation/scripts/pm3 /home/$USER/bin
 chmod 777 /home/$USER/bin/*
 
 #Adding server execution to boot
@@ -34,12 +34,12 @@ if grep -q boot.sh "/etc/profile"; then
 else
 	echo "Adding weather station to /etc/profile"
 	sudo echo "" >> /etc/profile
-	sudo echo -n "sh "$ACTUAL"/embeddedServer/scripts/boot.sh" >> /etc/profile
+	sudo echo -n "sh "$ACTUAL"/weatherStation/scripts/boot.sh" >> /etc/profile
 	sudo echo -e "\n" >> /etc/profile
 	fi
 
 #Create temporal data dirs.
 echo "Creating temporal data directories."
-sudo mkdir -p $ACTUAL"/embeddedServer/logs" $ACTUAL"/embeddedServer/config" $ACTUAL"/embeddedServer/data/backup"
+sudo mkdir -p $ACTUAL"/weatherStation/logs" $ACTUAL"/weatherStation/config" $ACTUAL"/weatherStation/data/backup"
 
 sudo reboot

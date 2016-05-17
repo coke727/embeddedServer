@@ -1,2 +1,2 @@
 #!/bin/sh
-(cd /home/$USER/embeddedServer && exec sudo python weatherStation.py)
+(cd /home/$USER/weatherStation && exec sudo python weatherStation.py)
